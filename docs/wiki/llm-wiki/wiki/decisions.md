@@ -1,14 +1,21 @@
-# Decisiones
+# Registro de decisiones
 
-## Decisiones aprobadas heredadas de especificación
+## DECISIÓN — 2026-09-17
 
-| Estado | Decisión | Fuente |
-| --- | --- | --- |
-| Aprobada | Dos repositorios independientes: API y web; la raíz no es un tercer repositorio. | [README raíz](../raw/context/root-readme.md) |
-| Aprobada | Backend hexagonal Java/Spring; frontend TypeScript React o Angular. | [Restricciones técnicas](../raw/approved/restricciones-tecnicas.md) |
-| Aprobada | Sin Express/BFF; REST directo entre frontend y Spring Boot. | [PRD](../raw/approved/PRD-v1.0.md) |
-| Aprobada | LLM Wiki global dentro de `citas-api/docs/wiki/llm-wiki/`. | [Restricciones técnicas](../raw/approved/restricciones-tecnicas.md) |
+La raíz no se convierte en un tercer repositorio. La única LLM Wiki se versiona dentro de `citas-api/docs/FCV Dev/llm-wiki/`.
 
-## Registro de nuevas decisiones
+## DECISIÓN — 2026-09-17 · Identidad backend
 
-No registrar una propuesta como decisión. Cada nueva entrada debe incluir fecha, aprobador, alternativas, impacto en API/web/datos y enlace a evidencia.
+El usuario aprobó el incremento mínimo de HU-001/002/004, el seed parcial de HU-003 y el backend completo de HU-005/006/007. Email se compara sin distinguir mayúsculas y documento por tipo+número. El refresh va en cookie HttpOnly para sitios distintos y rota en cada uso. Logout revoca el refresh de esa sesión. Las obligaciones de interfaz se trasladan a HU-033.
+
+## PREGUNTA ABIERTA
+
+No se han aprobado todavía estados exhaustivos de citas, contratos de las demás HU, zona horaria ni estrategia de reserva concurrente.
+
+## DECISIÓN — 2026-09-22 · Catálogo de subagentes
+
+Los ocho subagentes especializados se mantienen como archivos Markdown versionados en `docs/FCV Dev/subagents/`. El orquestador selecciona el perfil más específico, separa implementación de verificación y conserva la responsabilidad de coordinar cambios cross-repo y actualizar la Wiki.
+
+## HECHO — 2026-09-22 · Frontend
+
+React es el framework detectado en `citas-web`; deja de ser una pregunta abierta. La aprobación visual y la verificación del incremento auth continúan pendientes de evidencia.

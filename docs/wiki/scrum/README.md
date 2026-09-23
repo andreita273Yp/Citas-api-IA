@@ -1,48 +1,52 @@
-# Mapa Scrum / Spec-Driven Development
+---
+tipo: indice-scrum
+estado: Pendiente de aprobación
+---
 
-## Propósito y alcance
+# Mapa Scrum / Spec-Driven Development — Sistema de citas
 
-Este wiki traduce el PRD y las restricciones de arquitectura en unidades pequeñas, secuenciales y verificables. Es un artefacto de planificación: no autoriza implementaciones ni sustituye el contrato REST, el diseño de datos a 3FN, ni las decisiones de arquitectura que deberán quedar enlazadas cuando existan.
+## Propósito y límites
 
-Fuentes de trazabilidad: `../PRD.md`, `../RESTRICCIONES_TECNICAS.md` y `../database/REQUISITOS_NORMALIZACION_3FN.md`.
+Este mapa convierte el PRD v1 y las restricciones autorizadas en trabajo secuencial y verificable. El usuario aprobó el 2026-09-17 el corte backend de HU-001/002/004/005/006/007 y el seed parcial de roles de HU-003; las demás HU requieren revisión explícita. El contrato de autenticación está en la LLM Wiki; el framework web sigue sin aprobación.
 
-## Estado de las historias
+## Arquitectura y supuestos constatados
 
-| Estado | Significado | Regla de selección |
-|---|---|---|
-| Propuesta | Redactada y pendiente de revisión del Product Owner. | No seleccionable. |
-| En revisión | Requiere decisión, aclaración o priorización del Product Owner. | No seleccionable. |
-| Aprobada | Aceptada explícitamente por el Product Owner. | Seleccionable por S2, S3 o S4 si satisface sus dependencias. |
-| En curso | Seleccionada para un incremento. | No se considera terminada. |
-| Hecha | Cumple sus criterios y su DoD. | Mantiene evidencia enlazada. |
+- Backend requerido: Java 21, Spring Boot 3.5.x, Maven, arquitectura hexagonal, JPA, Flyway, MySQL 8.4 y REST/JSON.
+- Cliente requerido: TypeScript con React o Angular por decidir, consume REST directo; no hay Express ni BFF.
+- Los catálogos fijos se cargan por seed; los datos del laboratorio son sintéticos.
+- El repositorio contiene la aplicación backend y el contrato inicial de identidad. HU-005/006/007 están `Completada` para el corte backend con evidencia de `mvn test` (8 pruebas, 0 fallos); HU-001/002/003 y las épicas EP-001/002 permanecen parciales.
 
-**Regla vigente:** ninguna HU de este wiki está declarada `Aprobada`. Solo una revisión explícita del usuario puede cambiar ese estado.
+## Épicas
 
-## Cómo usar el mapa
+- [[EP-001-fundacion-y-contrato-del-producto]]
+- [[EP-002-identidad-y-perfil-del-usuario]]
+- [[EP-003-administracion-de-catalogos-y-profesionales]]
+- [[EP-004-disponibilidad-del-profesional]]
+- [[EP-005-busqueda-y-reserva-de-citas]]
+- [[EP-006-ciclo-de-vida-de-citas-y-reprogramaciones]]
+- [[EP-007-operacion-profesional-y-administrativa]]
+- [[EP-008-cliente-web-y-automatizaciones-posteriores]]
 
-1. Revisar [[epicas]] para validar capacidad, alcance y trazabilidad a requisitos.
-2. Revisar [[historias]] para aprobar HU individuales en el orden de sus dependencias.
-3. Usar [[incrementos]] para seleccionar únicamente HU aprobadas, sin convertir la propuesta en un calendario ni estimarla en horas, días o puntos.
-4. Al ejecutar una HU, enlazar desde su sección la especificación, decisión, migración, contrato, pruebas y evidencia que correspondan. No se inventa evidencia antes de implementarla.
+## Incrementos sugeridos
 
-## Convenciones
+Los sprints son incrementos funcionales secuenciales, no estimaciones de duración ni capacidad.
 
-- Identificador: `HU-###`; una historia debe poder verificarse de forma independiente al terminar su secuencia de dependencias.
-- Esfuerzo cualitativo: Bajo, Medio, Alto o Muy alto. No es una estimación temporal.
-- `DoD común` se suma a la `DoD específica` de cada HU; no la reemplaza.
-- Los wikilinks `[[...]]` expresan navegación y dependencias documentales; las dependencias de trabajo están también escritas en cada HU para evitar ambigüedad.
+1. **Incremento 1 — Fundaciones trazables:** [[HU-001-inicializar-fundacion-tecnica]], [[HU-002-modelar-persistencia-3fn]], [[HU-003-publicar-catalogos-fijos]], [[HU-004-definir-contrato-rest-inicial]]. Resultado: base verificable para construir y consumir el producto.
+2. **Incremento 2 — Acceso y datos del usuario:** [[HU-005-registrar-usuario]], [[HU-006-iniciar-sesion]], [[HU-007-renovar-y-cerrar-sesion]], [[HU-008-solicitar-recuperacion-de-contrasena]], [[HU-009-restablecer-contrasena]], [[HU-010-gestionar-perfil]], [[HU-011-gestionar-afiliacion]]. Resultado: USER autenticado y con perfil/afiliación coherentes.
+3. **Incremento 3 — Oferta clínica administrable:** [[HU-012-gestionar-eps]], [[HU-013-gestionar-planes-eps]], [[HU-014-gestionar-especialidades-y-duracion]], [[HU-015-crear-profesional]], [[HU-016-asignar-especialidades-al-profesional]], [[HU-017-asignar-sedes-y-estado-del-profesional]]. Resultado: oferta sintética y habilitable para agenda.
+4. **Incremento 4 — Disponibilidad y reserva:** [[HU-018-crear-bloques-de-disponibilidad]], [[HU-019-modificar-bloques-futuros]], [[HU-020-consultar-calendario-de-disponibilidad]], [[HU-021-buscar-disponibilidad]], [[HU-022-reservar-cita-general]], [[HU-023-solicitar-cita-especializada]], [[HU-024-resolver-solicitud-especializada]]. Resultado: citas generales aprobadas y especializadas bajo decisión ADMIN.
+5. **Incremento 5 — Continuidad de la cita:** [[HU-025-consultar-mis-citas]], [[HU-026-cancelar-cita]], [[HU-027-solicitar-reprogramacion]], [[HU-028-resolver-reprogramacion]]. Resultado: USER administra sus citas sin vulnerar reservas.
+6. **Incremento 6 — Operación controlada:** [[HU-029-consultar-agenda-profesional]], [[HU-030-cerrar-atencion]], [[HU-031-consultar-bandeja-administrativa]], [[HU-032-consultar-auditoria-de-estados]]. Resultado: profesionales y ADMIN operan con visibilidad y auditoría.
+7. **Incremento 7 — Cliente y automatizaciones posteriores:** [[HU-033-integrar-cliente-web-con-api]], [[HU-034-automatizar-recordatorios]], [[HU-035-notificar-cambios-de-estado]], [[HU-036-generar-resumen-operativo-diario]]. Resultado: flujos web integrados y automatizaciones S5/S6 sin cambiar el núcleo.
 
-## DoD común aplicable a toda HU
+## Decisiones e incógnitas que requieren revisión
 
-- Criterios de aceptación comprobados y evidencia enlazable desde la HU.
-- Diseño alineado con Java 21, Spring Boot 3.5.x, Maven, arquitectura hexagonal, JPA/MySQL/Flyway, REST JSON y seguridad definida, cuando aplique.
-- Validación server-side y autorización por rol/ownership cuando la capacidad exponga datos o acciones.
-- Sin secretos, tokens, contraseñas ni datos reales en código, documentación, fixtures o logs; los datos son sintéticos.
-- Pruebas aplicables desde S3: dominio, aplicación e integración REST/persistencia relevante; y contrato cross-repo para funcionalidades clave si hay cliente web.
-- Cambios documentales de contrato, decisiones y trazabilidad actualizados cuando la HU los afecte.
+- Seleccionar React o Angular después del flujo Stitch/AI Studio; las HU de cliente no presuponen uno.
+- Diseñar y aprobar el contrato REST antes de que las HU consumidoras lo usen; no se han definido rutas ni formatos.
+- Definir de forma consistente los valores concretos de catálogos fijos al realizar el seed, manteniendo lo que el PRD exige.
+- Precisar el canal seguro de exposición controlada del token de recuperación en desarrollo antes de implementar [[HU-008-solicitar-recuperacion-de-contrasena]].
+- Las automatizaciones de [[EP-008-cliente-web-y-automatizaciones-posteriores]] son posteriores al núcleo y dependen de la instancia/credenciales del trainer; sus JSON vivirán en `automations/n8n/` sin credenciales.
 
-## Navegación
+## Regla de selección para S2, S3 y S4
 
-- [[epicas]] — capacidades y cobertura del PRD.
-- [[historias]] — backlog atómico con aceptación, DoD, tareas y dependencias.
-- [[incrementos]] — propuesta de selección por S2, S3 y S4.
+Solo se puede seleccionar una HU cuyo estado sea `Aprobada`, cuyas dependencias estén `Completada` o se incluyan explícitamente en el mismo incremento secuencial, y cuyo contrato/decisión pendiente no altere su alcance. Este índice no concede aprobación.

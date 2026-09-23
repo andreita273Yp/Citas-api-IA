@@ -1,15 +1,14 @@
 # Riesgos y preguntas abiertas
 
-| Tipo | Hallazgo | Acción requerida |
-| --- | --- | --- |
-| Riesgo Git | Ambos repositorios están solo en `main`; no se observó `develop`. | Confirmar y crear/establecer flujo de trabajo antes de implementar. |
-| Riesgo worktree | `.env.example` aparece eliminado en ambos repositorios. | Preservar el estado hasta instrucción expresa; no abrir ni restaurar por inferencia. |
-| Pregunta de contrato | No hay especificación de endpoints, payloads, errores, fecha/hora, CORS o versionado. | Diseñar y aprobar contrato REST antes de integración. |
-| Pregunta frontend | Aún no hay diseño aprobado ni elección React/Angular. | Completar Stitch → aprobación → AI Studio antes de estructurar UI. |
-| Pregunta de dominio | Estados terminales y transiciones exactas de cita/reprogramación no están cerrados. | Registrar decisión antes de codificar máquinas de estado. |
-| Pregunta de concurrencia | No se especifica mecanismo ni expiración de retenciones de slots. | Decidir modelo transaccional y pruebas de doble reserva. |
-| Pregunta de catálogo | No se define la representación de Medicina General frente a especialidades configurables. | Acordar seed y semántica antes de API/datos. |
-| Pregunta de identidad | Falta flujo inicial para credenciales de profesionales creados por ADMIN. | Definir procedimiento seguro. |
-| Pregunta de datos | Falta decisión sobre historial de afiliación, snapshots y zona horaria. | Acordar antes de migraciones y contrato. |
-| Riesgo de fuente | El modelo de referencia del trainer puede estar retenido intencionalmente. | No leer ni ingerir hasta autorización. |
-| Pregunta n8n | Faltan contrato del webhook, autenticación, idempotencia y reintentos. | Resolver solo durante alcance S5/S6. |
+- Ambos repositorios trabajan en `develop`; `citas-web` contiene cambios locales aún no versionados que deben preservarse y verificarse.
+- No está definido el conjunto completo de estados y transiciones de citas.
+- Falta estrategia de exclusión concurrente de slots.
+- Falta política de zona horaria y formato temporal.
+- Es ambiguo si reservas `REQUESTED` o reprogramaciones `PENDING` bloquean la edición de bloques.
+- Falta lista completa de catálogos fijos y semillas.
+- Falta política de afiliación activa/histórica.
+- Los refresh tokens de HU-007 ya tienen rotación, expiración, revocación y almacenamiento definidos; queda pendiente la política futura para gestión multidispositivo.
+- El contrato REST de HU-005/006/007 está aprobado; faltan los contratos de las demás HU.
+- React 19 + TypeScript + Vite es el framework frontend detectado; falta evidencia de aprobación visual y cierre cross-repo de HU-033.
+- n8n necesita contrato de eventos, idempotencia, reintentos y autenticación de webhook.
+- La Skill `scrum-spec-orchestrator` conserva una allowlist interna para `docs/wiki/scrum/`; debe actualizarse explícitamente antes de usarla con `docs/FCV Dev/scrum/`.

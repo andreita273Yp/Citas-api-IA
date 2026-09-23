@@ -1,7 +1,8 @@
-# Preferencias
+# Preferencias confirmadas
 
-## PREFERENCIA — coordinación
+## PREFERENCIA
 
-Mantener una memoria global única en la LLM Wiki, resumida y trazable; no guardar transcripciones completas. Fuente: instrucción de orquestación aprobada.
-
-No hay preferencias de UI, framework frontend ni convenciones de API aprobadas todavía.
+- Mantener `main` estable y `develop` como rama de trabajo.
+- Usar HUs como unidad primaria de alcance y DoD.
+- Mantener RAW inmutable y la Wiki como síntesis, no como transcripción.
+- No persistir secretos, credenciales ni PII real.
