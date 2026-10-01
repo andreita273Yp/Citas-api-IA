@@ -51,6 +51,25 @@ Los valores se originan exclusivamente en Flyway V2: roles `USER`, `PROFESSIONAL
 - CORS admite únicamente `FRONTEND_ORIGIN`; se eliminó el origen `http://localhost:4200` fijo en código.
 - Cliente: `authInterceptor` agrega `X-Requested-With` y el Bearer a las llamadas a `citas-api`. Ante un `401` renueva una sola vez (compartida entre peticiones concurrentes) y reintenta; si el refresh falla, cierra la sesión. Al iniciar, intenta restaurar la sesión con la cookie refresh.
 
+## Oferta de atención — `/api/v1/admin` (HU-014 a HU-017)
+
+### DECISIÓN — 2026-10-01
+
+Todas las rutas `/api/v1/admin/**` exigen rol ADMIN en `SecurityConfig`: sin token responden `401`, con otro rol `403`. Los errores usan Problem Details: `400` datos inválidos, `404` recurso inexistente, `409` duplicado.
+
+| Operación | Entrada | Éxito |
+|---|---|---|
+| `GET /specialties` | — | `200`, lista con `id`, `code`, `name`, `durationMinutes`, `general`, `requiresAdminApproval`, `active` (incluye inactivas) |
+| `POST /specialties` | `code`, `name`, `durationMinutes` (30\|60) | `201`. Se crea especializada (`general=false`, `requiresAdminApproval=true`); el código se normaliza a MAYÚSCULAS_CON_GUIONES |
+| `PATCH /specialties/{id}` | `name?`, `durationMinutes?`, `active?` | `200`. No existe `DELETE` (`405`): retirar es desactivar |
+| `GET /professionals` · `GET /professionals/{id}` | — | `200`: `id`, `userId`, nombres, `email`, `phone`, `professionalCode`, `licenseNumber`, `active`, `specialties[{id,code,name,durationMinutes,primary}]`, `locations[{id,code,name}]` |
+| `POST /professionals` | `firstName`, `lastName`, `documentType`, `documentNumber`, `email`, `phone`, `initialPassword`, `professionalCode`, `licenseNumber` | `201`. Crea la identidad PROFESSIONAL y el profesional en una sola transacción; `initialPassword` se guarda en BCrypt y nunca se devuelve |
+| `PATCH /professionals/{id}` | `active` | `200` |
+| `PUT /professionals/{id}/specialties` | `assignments[{specialtyId, primary}]` | `200`. Reemplaza el conjunto: una o más especialidades activas y exactamente una primaria. Las que salen quedan `active=false` (se conserva el historial) |
+| `PUT /professionals/{id}/locations` | `locationIds[]` | `200`. Solo sedes fijas activas (HIC=1, ICV=2), sin repetidos |
+
+Efectos sobre la reserva (RN-07 y RN-08): `GET /catalogs/professionals`, `GET /availability` y `POST /appointments` solo aceptan un profesional activo, con la especialidad activa asociada y la sede asignada. Una especialidad inactiva o inexistente responde `404` y una combinación no ofrecida `409`. La duración siempre sale del catálogo.
+
 ### Impacto cross-repo antes del cambio REST
 
 - `citas-api`: nuevo `pom.xml`, código de dominio/aplicación/adaptadores, migración Flyway, configuración, pruebas y este contrato.

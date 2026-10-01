@@ -30,10 +30,22 @@ public class TestDatabase {
             try (Statement statement = connection.createStatement()) {
                 statement.execute("SET FOREIGN_KEY_CHECKS = 0");
                 for (String table : TRANSACTIONAL_TABLES) statement.execute("TRUNCATE TABLE " + table);
+                statement.execute("TRUNCATE TABLE specialties");
+                statement.execute("INSERT INTO specialties SELECT * FROM " + TestDatabaseConfig.SPECIALTIES_SNAPSHOT);
                 statement.execute("SET FOREIGN_KEY_CHECKS = 1");
             }
             return null;
         });
+    }
+
+    /** Inserta un bloque de disponibilidad y sus slots de 30 min (atajo hasta que exista HU-018). */
+    public void publishBlock(long professionalId, long locationId, java.time.LocalDate date, java.time.LocalTime start, java.time.LocalTime end) {
+        db.update("insert into availability_blocks(professional_id,location_id,available_date,start_time,end_time,active) values(?,?,?,?,?,true)",
+                professionalId, locationId, date, start, end);
+        long blockId = db.queryForObject("select last_insert_id()", Long.class);
+        for (java.time.LocalTime t = start; t.isBefore(end); t = t.plusMinutes(30))
+            db.update("insert into professional_slots(availability_block_id,start_at,end_at) values(?,?,?)",
+                    blockId, date.atTime(t), date.atTime(t.plusMinutes(30)));
     }
 
     public void grantRole(String email, String roleCode) {

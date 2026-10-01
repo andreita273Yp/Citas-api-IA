@@ -34,7 +34,10 @@ public class SecurityConfig {
                 .cors(cors -> { })
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(e -> e.authenticationEntryPoint((request, response, error) -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED)))
-                .authorizeHttpRequests(a -> a.requestMatchers(PUBLIC_PATHS).permitAll().anyRequest().authenticated())
+                .authorizeHttpRequests(a -> a.requestMatchers(PUBLIC_PATHS).permitAll()
+                        .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/v1/professional/**").hasRole("PROFESSIONAL")
+                        .anyRequest().authenticated())
                 .addFilterBefore(authRequestGuard, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwt, UsernamePasswordAuthenticationFilter.class)
                 .build();

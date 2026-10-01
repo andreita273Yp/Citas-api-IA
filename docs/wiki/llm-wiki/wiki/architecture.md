@@ -20,7 +20,8 @@ Cada módulo de `citas-api` sigue `domain` → `application` (`port/in`, `port/o
 - Los casos de uso se ensamblan como beans en `<módulo>/config`. Las transacciones entran por el puerto `TransactionPort`, implementado con `TransactionTemplate`.
 - La persistencia de identidad usa Spring Data JPA (`RESTRICCIONES_TECNICAS`).
 - `shared/security` (cadena de filtros, CORS, JWT Bearer) y `shared/web` (Problem Details) son transversales.
-- `identity` y `catalog` ya cumplen esta estructura. `scheduling` y la extensión de identidad (perfil y EPS) todavía consultan con `JdbcTemplate` desde controladores; esta deuda se paga en las fases que los completan (HU-008 a HU-032).
+- `identity`, `catalog` y `offer` (especialidades y profesionales) ya cumplen esta estructura. `offer` escribe con Spring Data JPA y lee su vista de profesionales con un modelo de lectura SQL (`ProfessionalReadModel`).
+- `/api/v1/admin/**` exige ADMIN y `/api/v1/professional/**` exige PROFESSIONAL en `SecurityConfig`, además de las validaciones de cada caso de uso. `scheduling` y la extensión de identidad (perfil y EPS) todavía consultan con `JdbcTemplate` desde controladores; esta deuda se paga en las fases que los completan (HU-008 a HU-032).
 
 ## DECISIÓN — 2026-09-24 · Entorno de frontend
 

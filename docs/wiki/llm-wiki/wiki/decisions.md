@@ -32,6 +32,14 @@ Sustituye, donde contradiga, a la decisión del 2026-09-24.
 - `change_source` admite solo `SYSTEM`, `USER` y `ADMIN` (RF-19). El cierre de atención de un PROFESSIONAL se registra como `USER`, con el actor en `changed_by_user_id`.
 - Las pruebas de integración usan MySQL real en `<DB_NAME>_test` (creada por `database/init/01-test-database.sh`), recreada con Flyway clean+migrate en cada ejecución, en lugar de H2.
 
+## DECISIÓN — 2026-10-01 · Oferta de atención (Fase 2)
+
+- Las especialidades que crea ADMIN son siempre especializadas: requieren aprobación (RN-03). `is_general` solo lo tiene Medicina General, por seed.
+- Para el alta de un PROFESSIONAL, ADMIN define una contraseña inicial con la misma política del registro (8 caracteres a 72 bytes). Se guarda en BCrypt y no se devuelve. El cambio por el propio profesional queda para la recuperación de contraseña (HU-008/009).
+- La identidad PROFESSIONAL la crea el módulo `identity` (`CreateStaffAccountUseCase`) dentro de la misma transacción que el registro en `professionals`. Si algo falla, no se persiste nada.
+- Las asignaciones de especialidades y sedes se reemplazan como conjunto con bloqueo pesimista de la fila del profesional. Las relaciones retiradas se marcan `active=false` en lugar de borrarse.
+- Desactivar un profesional o una especialidad no modifica las citas existentes. Solo impide ofrecerlos y crear nuevas reservas (HU-017: el PRD no define efecto retroactivo).
+
 ## DECISIÓN — 2026-09-22 · Catálogo de subagentes
 
 Los ocho subagentes especializados se mantienen como archivos Markdown versionados en `docs/wiki/subagents/`. El orquestador selecciona el perfil más específico, separa implementación de verificación y conserva la responsabilidad de coordinar cambios cross-repo y actualizar la Wiki.

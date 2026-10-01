@@ -2,7 +2,7 @@
 id: HU-017
 tipo: historia-de-usuario
 titulo: "Asignar sedes y estado del profesional"
-estado: Pendiente de aprobación
+estado: En desarrollo
 epica: "[[EP-003-administracion-de-catalogos-y-profesionales]]"
 esfuerzo: Medio
 sprint_sugerido: "Incremento 3"
@@ -29,8 +29,8 @@ Las dos sedes son catálogo fijo. La habilitación es requisito de agenda.
 ## Esfuerzo
 **Nivel:** Medio. **Justificación de dificultad:** combina N:M de sedes, estado y reglas de agenda.
 ## Tareas de desarrollo
-- [ ] **T-01 — Modelar asignación/estado.** Dificultad: Medio. Usar catálogo fijo y relación normalizada.
-- [ ] **T-02 — Aplicar gestión ADMIN.** Dificultad: Medio. Validar que solo se asigne sede fija.
+- [x] **T-01 — Modelar asignación/estado.** Dificultad: Medio. Usar catálogo fijo y relación normalizada.
+- [x] **T-02 — Aplicar gestión ADMIN.** Dificultad: Medio. Validar que solo se asigne sede fija.
 - [ ] **T-03 — Integrar/verificar agenda.** Dificultad: Medio. Probar inhabilitado o sede no asignada.
 ## Criterios de aceptación
 ### CA-01 — Sedes permitidas
@@ -46,10 +46,12 @@ Las dos sedes son catálogo fijo. La habilitación es requisito de agenda.
 ## Evidencia de validación
 | Elemento | Resultado | Evidencia | Observación |
 |---|---|---|---|
-| CA-01 | Pendiente | — | — |
-| CA-02 | Pendiente | — | — |
-| CA-03 / DoD | Pendiente | — | — |
+| CA-01 | Cumple | `hu017_ca01_onlyTheFixedLocationsCanBeAssigned`; `LocationAssignments`, `LocationCatalogPort` | HIC, ICV o ambas; sede inexistente, repetida o lista vacía → 400. |
+| CA-02 | Cumple | `hu017_ca02_deactivatedProfessionalIsNoLongerOfferedOrBookable` | Inactivo: no se ofrece y la reserva responde 409; al reactivarlo vuelve a ofrecerse, solo en sus sedes. |
+| CA-03 | Pendiente | — | Requiere el endpoint de bloques de disponibilidad (HU-018, Fase 3); se probará allí que un profesional inactivo o en sede no asignada no publica agenda. |
+| DoD cliente | Cumple | `AdminOffer` (Asignaciones y Activar/Desactivar) | Contra REST real. |
 ## Historial de validación
 - 2026-09-17 — HU creada en estado `Pendiente de aprobación`.
+- 2026-10-01 — RED 2026-10-01: las 11 pruebas de la Fase 2 fallaron con 404 (endpoints inexistentes) antes de implementar; GREEN tras implementar el módulo `offer`. Estado `En desarrollo`.
 ## Notas y decisiones
 - No se define el efecto retroactivo sobre citas existentes al desactivar; debe mantener integridad PRD.

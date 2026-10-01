@@ -35,6 +35,13 @@ public class AuthClient {
         return new Session(accessToken(result), result.getResponse().getCookie("refresh_token"));
     }
 
+    /** Registra una cuenta, le otorga ADMIN y devuelve su sesión. */
+    public Session admin(MockMvc mvc, TestDatabase database, String email, String documentNumber) throws Exception {
+        register(mvc, email, documentNumber);
+        database.grantRole(email, "ADMIN");
+        return login(mvc, email);
+    }
+
     public String accessToken(MvcResult result) throws Exception {
         JsonNode body = json.readTree(result.getResponse().getContentAsString());
         return body.get("accessToken").asText();

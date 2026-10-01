@@ -3,7 +3,7 @@ package co.edu.fcv.citas.identity.application;
 import co.edu.fcv.citas.identity.application.port.in.RegisterUserUseCase;
 import co.edu.fcv.citas.identity.application.port.out.InsuranceAffiliationPort;
 import co.edu.fcv.citas.identity.application.port.out.PasswordHasher;
-import co.edu.fcv.citas.identity.application.port.out.TransactionPort;
+import co.edu.fcv.citas.shared.application.TransactionPort;
 import co.edu.fcv.citas.identity.application.port.out.UserAccountPort;
 import co.edu.fcv.citas.identity.domain.Document;
 import co.edu.fcv.citas.identity.domain.EmailAddress;

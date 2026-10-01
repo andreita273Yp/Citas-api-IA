@@ -4,7 +4,7 @@ import co.edu.fcv.citas.identity.application.port.in.SessionUseCase;
 import co.edu.fcv.citas.identity.application.port.out.PasswordHasher;
 import co.edu.fcv.citas.identity.application.port.out.RefreshSessionPort;
 import co.edu.fcv.citas.identity.application.port.out.TokenPort;
-import co.edu.fcv.citas.identity.application.port.out.TransactionPort;
+import co.edu.fcv.citas.shared.application.TransactionPort;
 import co.edu.fcv.citas.identity.application.port.out.UserAccountPort;
 import co.edu.fcv.citas.identity.domain.EmailAddress;
 import co.edu.fcv.citas.identity.domain.IdentityException;

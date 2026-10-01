@@ -12,6 +12,13 @@ Las HU-001 a HU-036 existen en `docs/FCV Dev/scrum/`. HU-001/002/003 tienen avan
 
 El catálogo de ocho subagentes fue versionado en `docs/FCV Dev/subagents/` y enlazado desde el orquestador. `citas-web` contiene trabajo local React/Vite de autenticación y pruebas; no debe declararse completado hasta ejecutar build, typecheck, tests y verificación cross-repo.
 
+## HECHO — 2026-10-01 · Paso 2 (Fase 2, S3-A)
+
+HU-014, HU-015 y HU-016 quedan `Completada`; HU-017 queda `En desarrollo` hasta probar su CA-03 con los bloques de HU-018.
+
+- Evidencia: `SpecialtyAdministrationIntegrationTest` (4) y `ProfessionalAdministrationIntegrationTest` (7) sobre MySQL real; `offer-api.spec.ts`; pantalla `AdminOffer`.
+- RED → GREEN: las 11 pruebas fallaron con `404` antes de existir los endpoints.
+
 ## HECHO — 2026-10-01 · Paso 1 (cierre S2)
 
 HU-001, HU-003 a HU-007 quedan `Completada` con evidencia que apunta a pruebas existentes:
