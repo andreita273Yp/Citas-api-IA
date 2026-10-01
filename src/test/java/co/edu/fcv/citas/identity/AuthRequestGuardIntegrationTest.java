@@ -1,6 +1,6 @@
-package co.edu.fcv.citas.auth;
+package co.edu.fcv.citas.identity;
 import co.edu.fcv.citas.CitasApiApplication; import co.edu.fcv.citas.support.TestDatabase; import org.junit.jupiter.api.*; import org.springframework.beans.factory.annotation.Autowired; import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc; import org.springframework.boot.test.context.SpringBootTest; import org.springframework.http.MediaType; import org.springframework.test.web.servlet.MockMvc; import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*; import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-@SpringBootTest(classes=CitasApiApplication.class) @AutoConfigureMockMvc class AuthIntegrationTest {
+@SpringBootTest(classes=CitasApiApplication.class) @AutoConfigureMockMvc class AuthRequestGuardIntegrationTest {
  @Autowired MockMvc mvc;
  @Autowired TestDatabase database;
  private final String registration="{\"firstName\":\"Ana\",\"lastName\":\"Prueba\",\"documentType\":\"CC\",\"documentNumber\":\"12345\",\"email\":\"ANA@EXAMPLE.COM\",\"phone\":\"3001234567\",\"password\":\"password-segura\"}";

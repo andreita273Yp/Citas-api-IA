@@ -49,7 +49,7 @@ El PRD exige REST/JSON directo, pero no fija rutas, formatos ni códigos. Estos 
 |---|---|---|---|
 | CA-01 | Cumple | `../../llm-wiki/wiki/contracts.md` | Rutas, entrada, salida, autorización y errores de identidad/catálogos están documentados. |
 | CA-02 | Cumple | `citas-web/src/app/services/auth-api.ts`; frontend en `http://localhost:4200` | Angular consume `citas-api` directamente, sin BFF. |
-| CA-03 / DoD | Cumple | `contracts.md`, Flyway V1/V2, `mvn test`, lint/Vitest/build | Impacto de ambos repositorios y compatibilidad quedan registrados. |
+| CA-03 / DoD | Cumple | `contracts.md` (ajustes 2026-10-01 por Flyway V6), `mvn test`, lint/Vitest/build | Impacto de ambos repositorios y compatibilidad quedan registrados. |
 ## Historial de validación
 - 2026-09-17 — HU creada en estado `Pendiente de aprobación`.
 - 2026-09-24 — Contrato inicial validado cross-repo en Docker. Solo cubre identidad y catálogos; las rutas de agenda siguen fuera de alcance. Estado `Completada`.

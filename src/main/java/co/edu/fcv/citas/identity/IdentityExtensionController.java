@@ -1,5 +1,5 @@
 package co.edu.fcv.citas.identity;
-import co.edu.fcv.citas.auth.ApiException;
+import co.edu.fcv.citas.shared.web.ApiException;
 import java.nio.charset.StandardCharsets; import java.security.*; import java.time.*; import java.util.*;
 import org.springframework.http.*; import org.springframework.jdbc.core.JdbcTemplate; import org.springframework.security.core.*; import org.springframework.security.core.context.SecurityContextHolder; import org.springframework.security.crypto.password.PasswordEncoder; import org.springframework.transaction.annotation.Transactional; import org.springframework.web.bind.annotation.*;
 

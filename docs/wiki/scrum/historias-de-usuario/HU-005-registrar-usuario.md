@@ -52,17 +52,18 @@ Datos mínimos: nombres, apellidos, tipo/número de documento, email, teléfono 
 ## Evidencia de validación
 | Elemento | Resultado | Evidencia | Observación |
 |---|---|---|---|
-| CA-01 | Cumple | `AuthIntegrationTest.registrationUsesUniqueIdentityAndBcrypt`, `AuthService.register`, `AuthController.register` | 201, rol USER y respuesta sin password. |
-| CA-02 | Cumple | `V1__identity.sql` UK email/documento; `AuthIntegrationTest.registrationUsesUniqueIdentityAndBcrypt` | 409 sin segunda cuenta. |
-| CA-03 | Cumple | `AuthController.RegisterRequest`, `Identity.email`, `AuthIntegrationTest.registrationUsesUniqueIdentityAndBcrypt` | Campo obligatorio ausente, email inválido y password fuera del límite técnico producen 400. |
-| CA-04 | Cumple | `Identity.email`, `Identity.documentType`, `AuthService.register`, `AuthIntegrationTest.registrationUsesUniqueIdentityAndBcrypt` | Normalización, unicidad y BCrypt comprobados. |
-| DoD pruebas | Cumple | `AuthIntegrationTest`, `auth-api.spec.ts` | Backend 7/7 y cliente Angular registra contra la URL configurable. |
-| DoD esquema/seguridad | Cumple | `V1__identity.sql`, `data-integrity.md`, `AuthController`, `AuthService` | Flyway 3FN, validación server-side, sin password en respuesta ni logger de credenciales. |
+| CA-01 | Cumple | `RegistrationIntegrationTest.ca01_createsUserAccountWithOnlyUserRoleAndWithoutExposingPassword`; `RegistrationService` | 201, solo rol USER (un `roles` enviado se ignora) y respuesta sin password ni hash. |
+| CA-02 | Cumple | `RegistrationIntegrationTest.ca02_ca04_rejectsSameEmail…`, `ca02_ca04_rejectsSameDocument…`; UK `uq_users_email`, `uq_users_document` (V6) | 409 sin segunda cuenta; una carrera la resuelve la UK y se traduce a 409. |
+| CA-03 | Cumple | `RegistrationIntegrationTest.ca03_rejectsMissingOrInvalidDataWithoutPersistingAPartialAccount` (5 casos); `PersonalData`, `EmailAddress`, `PasswordPolicy` | Campo ausente, email inválido, contraseña corta, teléfono vacío y contraseña > 72 bytes → 400 sin filas. |
+| CA-04 | Cumple | `EmailAddress.of`, `Document`; `RegistrationIntegrationTest.ca04_storesPasswordOnlyAsBcryptHash` | Email con espacios/mayúsculas se normaliza antes de validar; solo se guarda hash BCrypt. |
+| DoD pruebas | Cumple | `RegistrationIntegrationTest` (9), `auth-api.spec.ts` | MySQL real; cliente Angular registra contra la URL configurable. |
+| DoD esquema/seguridad | Cumple | `V6__reference_3fn_model.sql`, `data-integrity.md`, `AuthController`, `RegistrationService` | Validación server-side en dominio; sin password en respuesta ni logs. |
 | DoD trazabilidad | Cumple | Esta HU, `contracts.md`, `traceability.md` | Formulario real de registro implementado y verificado visualmente en localhost. |
 ## Historial de validación
 - 2026-09-17 — HU creada en estado `Pendiente de aprobación`.
 - 2026-09-17 — Corte backend aprobado, validado y completado con `mvn test` (8/8); tareas de UI movidas a HU-033.
 - 2026-09-24 — Fase 1 conectó el formulario Angular a `POST /auth/register`; lint, Vitest (5/5) y build pasaron en Docker. Estado `Completada`.
+- 2026-10-01 — Revalidación: las pruebas citadas antes ya no existían en el repositorio. Se reescribieron; RED real en `ca02_ca04_rejectsSameEmailIgnoringCaseAndSpaces…` (400 en lugar de 409: `@Email` validaba antes de normalizar). Corregido moviendo la validación al dominio; GREEN. Se mantiene `Completada`.
 ## Notas y decisiones
 - El diseño visual requiere aprobación fuera de esta especificación.
 - 2026-09-17: usuario aprobó el corte backend. Formulario y flujo visual pasan a HU-033; su ausencia no bloquea la DoD backend de HU-005. Documento único por tipo+número, email normalizado sin distinguir mayúsculas. No se implementa registro de otros roles.

@@ -48,12 +48,13 @@ Roles, estados de cita, estados de reprogramación, regímenes y sedes son de so
 ## Evidencia de validación
 | Elemento | Resultado | Evidencia | Observación |
 |---|---|---|---|
-| CA-01 | Cumple | `V2__fixed_catalogs.sql`, `CatalogIntegrationTest.authenticatedUserReadsFixedCatalogsAndWritesAreNotAllowed` | Roles, estados y regímenes se crean por Flyway y se leen con JWT. |
-| CA-02 | Cumple | `V2__fixed_catalogs.sql`, `CatalogIntegrationTest.authenticatedUserReadsFixedCatalogsAndWritesAreNotAllowed` | La respuesta contiene HIC e ICV con sus direcciones del laboratorio. |
-| CA-03 / DoD | Cumple | `CatalogController` solo declara GET; prueba POST recibe 405; `mvn test` 7/7 | No se introdujeron rutas de escritura ni secretos. |
+| CA-01 | Cumple | `V6__reference_3fn_model.sql`, `CatalogIntegrationTest.publishesFixedCatalogsToAuthenticatedConsumersAsReadOnly` | Roles, estados de cita y reprogramación, regímenes y sedes se crean por Flyway y se leen con JWT. |
+| CA-02 | Cumple | `V6__reference_3fn_model.sql`, `CatalogIntegrationTest.publishesFixedCatalogsToAuthenticatedConsumersAsReadOnly` | HIC e ICV con dirección, ciudad y departamento públicos. |
+| CA-03 / DoD | Cumple | `CatalogController` solo declara GET; POST recibe 405; `rejectsUnauthenticatedCatalogAccess` 401 | No hay rutas de escritura ni secretos. |
 ## Historial de validación
 - 2026-09-17 — HU creada en estado `Pendiente de aprobación`.
 - 2026-09-24 — Validada en Docker con Flyway V2 y `CatalogIntegrationTest`; `mvn test` 7/7. Estado `Completada`.
+- 2026-10-01 — Revalidada con el modelo de referencia (Flyway V6) sobre MySQL real; se mantiene `Completada`.
 ## Notas y decisiones
 - Los valores de estados deberán alinearse con el catálogo fijo aprobado.
 - 2026-09-17: se aprobó únicamente el seed de roles `USER`, `PROFESSIONAL`, `ADMIN` como dependencia de identidad. La publicación REST de roles y los demás catálogos quedan pendientes; HU-003 conserva su estado.

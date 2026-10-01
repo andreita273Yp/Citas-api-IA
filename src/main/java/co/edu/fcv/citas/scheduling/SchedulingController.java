@@ -1,5 +1,5 @@
 package co.edu.fcv.citas.scheduling;
-import co.edu.fcv.citas.auth.ApiException;
+import co.edu.fcv.citas.shared.web.ApiException;
 import java.time.*; import java.util.*; import org.springframework.http.HttpStatus; import org.springframework.jdbc.core.JdbcTemplate; import org.springframework.security.core.*; import org.springframework.security.core.context.SecurityContextHolder; import org.springframework.transaction.annotation.Transactional; import org.springframework.web.bind.annotation.*;
 
 /** Booking adapter for the official 3FN appointment/slot model. */

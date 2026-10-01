@@ -15,6 +15,10 @@ spring:
     # db/seed contiene datos sintéticos de demostración; quitarlo con FLYWAY_LOCATIONS fuera de local.
     locations: ${FLYWAY_LOCATIONS:classpath:db/migration,classpath:db/seed}
 server.error.include-message: never
+# Solo el estado de salud es público; ningún otro endpoint de actuator se expone.
+management:
+  endpoints.web.exposure.include: health
+  endpoint.health.show-details: never
 app:
   profile: ${APP_PROFILE:local}
   jwt:

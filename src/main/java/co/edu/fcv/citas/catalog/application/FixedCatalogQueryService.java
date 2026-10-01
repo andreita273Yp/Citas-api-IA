@@ -5,9 +5,7 @@ import co.edu.fcv.citas.catalog.application.port.out.FixedCatalogReadPort;
 import co.edu.fcv.citas.catalog.domain.CatalogItem;
 import co.edu.fcv.citas.catalog.domain.Location;
 import java.util.List;
-import org.springframework.stereotype.Service;
 
-@Service
 public class FixedCatalogQueryService implements ReadFixedCatalogUseCase {
     private final FixedCatalogReadPort catalogReadPort;
 

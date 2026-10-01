@@ -44,6 +44,13 @@ Los valores se originan exclusivamente en Flyway V2: roles `USER`, `PROFESSIONAL
 - `/error` es público para que un fallo interno responda `500` y no se oculte como `401`.
 - Impacto en `citas-web`: `AppointmentApi` y `OperationsApi` ya tipan esos campos como `string`. La adopción visual se verifica en las fases de frontend.
 
+### DECISIÓN — 2026-10-01 · Cierre S2 (HU-001 a HU-007)
+
+- Registro y login normalizan el email (trim y minúsculas) **antes** de validarlo. Los errores de negocio responden Problem Details: `400` datos inválidos, `409` duplicado, `401` credencial o refresh inválido.
+- `GET /actuator/health` es público y devuelve solo `{"status":"UP"}`; los demás endpoints de actuator no se exponen.
+- CORS admite únicamente `FRONTEND_ORIGIN`; se eliminó el origen `http://localhost:4200` fijo en código.
+- Cliente: `authInterceptor` agrega `X-Requested-With` y el Bearer a las llamadas a `citas-api`. Ante un `401` renueva una sola vez (compartida entre peticiones concurrentes) y reintenta; si el refresh falla, cierra la sesión. Al iniciar, intenta restaurar la sesión con la cookie refresh.
+
 ### Impacto cross-repo antes del cambio REST
 
 - `citas-api`: nuevo `pom.xml`, código de dominio/aplicación/adaptadores, migración Flyway, configuración, pruebas y este contrato.
