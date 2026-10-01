@@ -7,14 +7,14 @@ estado: Pendiente de aprobación
 
 ## Propósito y límites
 
-Este mapa convierte el PRD v1 y las restricciones autorizadas en trabajo secuencial y verificable. El usuario aprobó el 2026-09-17 el corte backend de HU-001/002/004/005/006/007 y el seed parcial de roles de HU-003; las demás HU requieren revisión explícita. El contrato de autenticación está en la LLM Wiki; el framework web sigue sin aprobación.
+Este mapa convierte el PRD v1 y las restricciones autorizadas en trabajo secuencial y verificable. El corte backend de identidad tiene implementación, pero HU-001 a HU-007 deben revalidarse antes de declararse cerradas. Las demás HU requieren revisión y aprobación explícita. El contrato de autenticación está en la LLM Wiki; el frontend importado usa Angular 21.
 
 ## Arquitectura y supuestos constatados
 
 - Backend requerido: Java 21, Spring Boot 3.5.x, Maven, arquitectura hexagonal, JPA, Flyway, MySQL 8.4 y REST/JSON.
-- Cliente requerido: TypeScript con React o Angular por decidir, consume REST directo; no hay Express ni BFF.
+- Cliente: Angular 21 + TypeScript, consume REST directo; no hay Express ni BFF.
 - Los catálogos fijos se cargan por seed; los datos del laboratorio son sintéticos.
-- El repositorio contiene la aplicación backend y el contrato inicial de identidad. HU-005/006/007 están `Completada` para el corte backend con evidencia de `mvn test` (8 pruebas, 0 fallos); HU-001/002/003 y las épicas EP-001/002 permanecen parciales.
+- El repositorio contiene la aplicación backend y el contrato inicial de identidad. La evidencia vigente debe repetirse dentro de Docker antes de cerrar HU-005/006/007; HU-001/002/003 y las épicas EP-001/002 permanecen parciales.
 
 ## Épicas
 
@@ -41,7 +41,7 @@ Los sprints son incrementos funcionales secuenciales, no estimaciones de duraci�
 
 ## Decisiones e incógnitas que requieren revisión
 
-- Seleccionar React o Angular después del flujo Stitch/AI Studio; las HU de cliente no presuponen uno.
+- Angular 21 es el framework del cliente; las HU de cliente respetan el diseño aprobado de Stitch/AI Studio.
 - Diseñar y aprobar el contrato REST antes de que las HU consumidoras lo usen; no se han definido rutas ni formatos.
 - Definir de forma consistente los valores concretos de catálogos fijos al realizar el seed, manteniendo lo que el PRD exige.
 - Precisar el canal seguro de exposición controlada del token de recuperación en desarrollo antes de implementar [[HU-008-solicitar-recuperacion-de-contrasena]].

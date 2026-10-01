@@ -2,7 +2,7 @@
 id: HU-025
 tipo: historia-de-usuario
 titulo: "Consultar mis citas"
-estado: Pendiente de aprobación
+estado: En desarrollo
 epica: "[[EP-006-ciclo-de-vida-de-citas-y-reprogramaciones]]"
 esfuerzo: Medio
 sprint_sugerido: "Incremento 5"

@@ -13,3 +13,9 @@ La estrategia concreta de concurrencia, retención de slots, zona horaria y repr
 Flyway V1 separa `users`, `roles`, `user_roles` y `refresh_sessions`. Las PK son identificadores propios, la relación usuario–rol es N:M mediante puente y cada sesión refresh referencia exactamente un usuario. Email canónico tiene UK global; documento usa UK `(document_type, document_number)`. `jti_hash` tiene UK y nunca se guarda el JWT. El índice `(user_id, revoked_at)` facilita consultas de sesiones del usuario; la búsqueda por refresh usa el UK de `jti_hash` y bloqueo de fila para rotación concurrente.
 
 Los atributos personales dependen solo de `users.id`, nombres de rol solo de `roles.id` y vigencia/revocación solo de `refresh_sessions.id`; no hay listas ni dependencias parciales o transitivas entre atributos no clave en este corte. El modelo del resto del PRD sigue pendiente en HU-002.
+
+## DECISIÓN — 2026-09-24 · Catálogos fijos V2
+
+Flyway V2 agrega `fixed_catalog_entries` y `locations`. Cada fila de catálogo depende de su identificador y la combinación `(catalog_type, code)` es única; por ello un código no se duplica dentro del mismo catálogo. Una sede tiene identidad propia, código único, nombre y dirección pública del laboratorio; no se guarda la dirección junto a un usuario ni se repite en las respuestas de identidad. Los valores se insertan con la migración y las rutas REST no exponen escritura.
+
+Este corte normaliza únicamente los catálogos necesarios para S2. Las FK de oferta, disponibilidad y citas se agregarán en sus migraciones posteriores; no se adelantan tablas ni reglas de agenda en esta fase.

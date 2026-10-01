@@ -2,7 +2,7 @@
 id: HU-012
 tipo: historia-de-usuario
 titulo: "Gestionar EPS"
-estado: Pendiente de aprobación
+estado: En validación
 epica: "[[EP-003-administracion-de-catalogos-y-profesionales]]"
 esfuerzo: Medio
 sprint_sugerido: "Incremento 3"
@@ -51,5 +51,6 @@ Es catálogo configurable; no se borra físicamente si está referenciado.
 | CA-03 / DoD | Pendiente | — | — |
 ## Historial de validación
 - 2026-09-17 — HU creada en estado `Pendiente de aprobación`.
+- 2026-09-29 — CRUD lógico REST y pantalla ADMIN implementados; prueba de integración confirma rechazo a USER y alta por ADMIN.
 ## Notas y decisiones
 - Los campos concretos del catálogo deben aprobarse en el contrato.

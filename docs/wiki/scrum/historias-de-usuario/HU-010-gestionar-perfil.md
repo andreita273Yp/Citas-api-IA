@@ -2,7 +2,7 @@
 id: HU-010
 tipo: historia-de-usuario
 titulo: "Gestionar perfil"
-estado: Pendiente de aprobación
+estado: En validación
 epica: "[[EP-002-identidad-y-perfil-del-usuario]]"
 esfuerzo: Medio
 sprint_sugerido: "Incremento 2"
@@ -51,5 +51,6 @@ El PRD no enumera cuáles campos de identidad pueden cambiar; esa limitación de
 | CA-03 / DoD | Pendiente | — | Requiere acuerdo de campos. |
 ## Historial de validación
 - 2026-09-17 — HU creada en estado `Pendiente de aprobación`.
+- 2026-09-29 — El contrato limita `PATCH /users/me` a teléfono. La prueba de integración cubre lectura propia y cambio de teléfono; pantalla Angular conectada a REST.
 ## Notas y decisiones
 - Pregunta abierta: campos exactos editables.

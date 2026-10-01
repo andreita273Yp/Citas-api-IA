@@ -1,6 +1,6 @@
 # Índice de la LLM Wiki
 
-Última actualización: 2026-09-22. El corte backend de identidad (HU-005/006/007) tiene implementación y contrato REST inicial. El frontend React/Vite está importado y contiene trabajo local de integración auth pendiente de verificación. Las demás capacidades siguen sin contrato final.
+Última actualización: 2026-09-24. Fase 1 validó en Docker el contrato de identidad, el consumo Angular de autenticación y la publicación REST de catálogos fijos. No se ha implementado oferta, disponibilidad, citas ni n8n; esas capacidades conservan su contrato pendiente por HU.
 
 ## Lectura recomendada
 
@@ -14,6 +14,7 @@
 8. [Preferencias](preferences.md)
 9. [Trazabilidad](traceability.md)
 10. [Subagentes y delegación](subagents.md)
+11. [Línea base — Fase 0](baseline-phase0.md)
 
 ## Gobierno
 

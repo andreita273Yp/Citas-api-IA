@@ -2,7 +2,7 @@
 id: HU-013
 tipo: historia-de-usuario
 titulo: "Gestionar planes de EPS"
-estado: Pendiente de aprobación
+estado: En validación
 epica: "[[EP-003-administracion-de-catalogos-y-profesionales]]"
 esfuerzo: Medio
 sprint_sugerido: "Incremento 3"
@@ -51,5 +51,6 @@ El plan depende de EPS y tampoco se borra físicamente si está referenciado.
 | CA-03 / DoD | Pendiente | — | — |
 ## Historial de validación
 - 2026-09-17 — HU creada en estado `Pendiente de aprobación`.
+- 2026-09-29 — Planes asociados por FK a EPS, con alta y baja lógica REST. La creación de un registro con plan activo se cubre en prueba de integración.
 ## Notas y decisiones
 - No se presupone un atributo comercial para el plan.

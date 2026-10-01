@@ -2,7 +2,7 @@
 id: HU-011
 tipo: historia-de-usuario
 titulo: "Gestionar afiliación"
-estado: Pendiente de aprobación
+estado: En validación
 epica: "[[EP-002-identidad-y-perfil-del-usuario]]"
 esfuerzo: Medio
 sprint_sugerido: "Incremento 2"
@@ -51,5 +51,6 @@ EPS y planes son configurables; régimen es catálogo fijo.
 | CA-03 / DoD | Pendiente | — | — |
 ## Historial de validación
 - 2026-09-17 — HU creada en estado `Pendiente de aprobación`.
+- 2026-09-29 — Afiliación inicial opcional por FK a plan activo y actualización propia implementadas. No se almacenan nombres de EPS/plan en `users`.
 ## Notas y decisiones
 - La regla de vigencia de una EPS/plan se abordará con sus HU administrativas.

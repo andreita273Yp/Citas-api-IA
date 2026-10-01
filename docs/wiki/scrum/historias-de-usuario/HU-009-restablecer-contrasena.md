@@ -2,7 +2,7 @@
 id: HU-009
 tipo: historia-de-usuario
 titulo: "Restablecer contraseña"
-estado: Pendiente de aprobación
+estado: En validación
 epica: "[[EP-002-identidad-y-perfil-del-usuario]]"
 esfuerzo: Alto
 sprint_sugerido: "Incremento 2"
@@ -51,5 +51,6 @@ Cambiar contraseña consume/invalida el token de recuperación.
 | CA-03 / DoD | Pendiente | — | — |
 ## Historial de validación
 - 2026-09-17 — HU creada en estado `Pendiente de aprobación`.
+- 2026-09-29 — Implementado consumo atómico de token, BCrypt y revocación de refresh sessions. `IdentityExtensionIntegrationTest` verifica restablecimiento, reutilización rechazada y nuevo login.
 ## Notas y decisiones
 - La política de sesiones posteriores debe documentarse con [[HU-007-renovar-y-cerrar-sesion]].

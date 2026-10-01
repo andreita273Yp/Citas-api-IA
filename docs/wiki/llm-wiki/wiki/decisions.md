@@ -2,20 +2,40 @@
 
 ## DECISIÓN — 2026-09-17
 
-La raíz no se convierte en un tercer repositorio. La única LLM Wiki se versiona dentro de `citas-api/docs/FCV Dev/llm-wiki/`.
+La raíz no se convierte en un tercer repositorio. La única LLM Wiki se versiona dentro de `citas-api/docs/wiki/llm-wiki/`.
 
 ## DECISIÓN — 2026-09-17 · Identidad backend
 
 El usuario aprobó el incremento mínimo de HU-001/002/004, el seed parcial de HU-003 y el backend completo de HU-005/006/007. Email se compara sin distinguir mayúsculas y documento por tipo+número. El refresh va en cookie HttpOnly para sitios distintos y rota en cada uso. Logout revoca el refresh de esa sesión. Las obligaciones de interfaz se trasladan a HU-033.
 
-## PREGUNTA ABIERTA
+## DECISIÓN — 2026-09-24 · Contrato base del núcleo de citas
 
-No se han aprobado todavía estados exhaustivos de citas, contratos de las demás HU, zona horaria ni estrategia de reserva concurrente.
+- La zona de negocio es `America/Bogota`.
+- El contrato REST representa una fecha con `YYYY-MM-DD` y una hora con `HH:mm`; nunca deriva la franja de la zona del navegador.
+- Las citas usan los estados `REQUESTED`, `APPROVED`, `REJECTED`, `CANCELLED`, `COMPLETED` y `NO_SHOW`. Las transiciones se implementarán de manera explícita y auditada en la fase correspondiente.
+- Las reprogramaciones usan `PENDING`, `APPROVED` y `REJECTED`; mientras están en `PENDING`, la cita y su franja original permanecen vigentes.
+- La clasificación de una especialidad será un atributo de catálogo `GENERAL` o `SPECIALIZED`; la especialidad de Medicina General será el único catálogo inicialmente marcado `GENERAL`.
+- La persistencia almacenará instantes en UTC cuando corresponda, mientras el contrato y las validaciones de agenda se interpretan en `America/Bogota`.
+- La toma de slots se resolverá en una única transacción con bloqueo pesimista ordenado de los slots solicitados, comprobación de disponibilidad y una relación única cita-slot. La validación previa de disponibilidad no será la única protección.
+
+## DECISIÓN — 2026-10-01 · Persistencia alineada al modelo 3FN de referencia (Paso 0)
+
+Sustituye, donde contradiga, a la decisión del 2026-09-24.
+
+- La persistencia adopta el modelo de referencia del trainer (`database/reference/db.sql`) mediante Flyway `V6__reference_3fn_model.sql`. V1-V5 no se modifican; V6 retira sus tablas provisionales, que nunca se aplicaron en un entorno compartido. El PRD §7 y el README permiten usar el modelo de referencia tras la actividad de normalización.
+- Flyway queda habilitado. `db/migration` contiene esquema y catálogos fijos o públicos (roles, regímenes, estados, sedes, especialidades); `db/seed/R__demo_seed.sql` contiene los datos sintéticos de demostración y solo se carga en local (`FLYWAY_LOCATIONS`).
+- Identificadores numéricos (`BIGINT`/`SMALLINT`). El contrato los expone como texto en las vistas de citas para no romper el cliente.
+- Las fechas de citas, bloques y slots se guardan como `DATETIME` en hora local de `America/Bogota`; la JVM fija esa zona al iniciar (`CitasApiApplication.BUSINESS_ZONE`). Deja sin efecto el almacenamiento en UTC.
+- Medicina General se identifica con `specialties.is_general = TRUE` y `requires_admin_approval = FALSE`; no se crea un atributo `GENERAL`/`SPECIALIZED` aparte.
+- Una reprogramación `PENDING` retiene su nueva franja asignando esos `professional_slots` a la misma cita; aprobar libera la franja anterior y rechazar libera solo la nueva (RN-10). No se agrega tabla de retenciones.
+- El motivo de rechazo de una cita se toma del `appointment_status_history` de su estado `REJECTED`; la tabla `appointments` del modelo no tiene esa columna.
+- `change_source` admite solo `SYSTEM`, `USER` y `ADMIN` (RF-19). El cierre de atención de un PROFESSIONAL se registra como `USER`, con el actor en `changed_by_user_id`.
+- Las pruebas de integración usan MySQL real en `<DB_NAME>_test` (creada por `database/init/01-test-database.sh`), recreada con Flyway clean+migrate en cada ejecución, en lugar de H2.
 
 ## DECISIÓN — 2026-09-22 · Catálogo de subagentes
 
-Los ocho subagentes especializados se mantienen como archivos Markdown versionados en `docs/FCV Dev/subagents/`. El orquestador selecciona el perfil más específico, separa implementación de verificación y conserva la responsabilidad de coordinar cambios cross-repo y actualizar la Wiki.
+Los ocho subagentes especializados se mantienen como archivos Markdown versionados en `docs/wiki/subagents/`. El orquestador selecciona el perfil más específico, separa implementación de verificación y conserva la responsabilidad de coordinar cambios cross-repo y actualizar la Wiki.
 
-## HECHO — 2026-09-22 · Frontend
+## HECHO — 2026-09-24 · Frontend
 
-React es el framework detectado en `citas-web`; deja de ser una pregunta abierta. La aprobación visual y la verificación del incremento auth continúan pendientes de evidencia.
+Angular 21 es el framework detectado en `citas-web`; deja de ser una pregunta abierta. La prueba enfocada de `AuthApi` y lint se verificaron en un contenedor Linux. La aprobación visual y la integración funcional de HU-033 continúan pendientes.

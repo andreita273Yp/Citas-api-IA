@@ -2,7 +2,7 @@
 id: HU-032
 tipo: historia-de-usuario
 titulo: "Consultar auditoría de estados"
-estado: Pendiente de aprobación
+estado: En desarrollo
 epica: "[[EP-007-operacion-profesional-y-administrativa]]"
 esfuerzo: Alto
 sprint_sugerido: "Incremento 6"

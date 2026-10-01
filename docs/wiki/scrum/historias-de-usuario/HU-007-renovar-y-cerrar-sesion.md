@@ -55,12 +55,13 @@ La API permite refresh y revocación/logout.
 | CA-02 | Cumple | `JwtTokens.readRefresh`, `AuthService.refresh`, `AuthIntegrationTest.invalidCredentialsTokensAndOrigin` | Vencido, falsificado y tipo access rechazados; revocado y reutilizado probados en ciclo. |
 | CA-03 | Cumple | `AuthService.logout`, `AuthController.logout`, `AuthIntegrationTest.loginRefreshLogoutAndRoles` | 204, cookie Max-Age=0 y refresh anterior no reutilizable. |
 | CA-04 | Cumple | `SessionJpaAdapter.lockByJtiHash`, `AuthIntegrationTest.simultaneousRefreshAllowsOnlyOneRotation` | Bajo concurrencia, una renovación 200 y otra 401. |
-| DoD pruebas | Cumple | `target/surefire-reports/*.txt` | `mvn test`: 8 pruebas, 0 fallos/errores. |
+| DoD pruebas | Cumple | `AuthIntegrationTest`, `auth-api.spec.ts` | Backend 7/7; refresh y logout están cubiertos por cliente Angular (5/5). |
 | DoD revocación/logs | Cumple | `V1__identity.sql`, `AuthService`, `SessionJpaAdapter` | Se persiste solo hash de jti, vigencia/revocación; no hay logger de tokens. |
-| DoD trazabilidad | Cumple | Esta HU, HU-033, `contracts.md`, `traceability.md` | Limpieza visual diferida a HU-033. |
+| DoD trazabilidad | Cumple | Esta HU, `contracts.md`, `traceability.md` | Logout invoca la API y limpia el token solo de memoria. |
 ## Historial de validación
 - 2026-09-17 — HU creada en estado `Pendiente de aprobación`.
 - 2026-09-17 — Corte backend aprobado, validado y completado con `mvn test` (8/8); tareas de UI movidas a HU-033.
+- 2026-09-24 — Fase 1 conectó refresh/logout en el cliente y comprobó lint, Vitest y build en Docker. Estado `Completada`.
 ## Notas y decisiones
 - No se inventa una política global de revocación fuera del PRD.
 - 2026-09-17: usuario aprobó el corte backend con rotación por uso y logout. La limpieza de estado del cliente pasa a HU-033; la DoD backend se valida por cookie eliminada y revocación persistida.

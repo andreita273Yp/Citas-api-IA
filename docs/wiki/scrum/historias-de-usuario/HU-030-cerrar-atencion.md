@@ -2,7 +2,7 @@
 id: HU-030
 tipo: historia-de-usuario
 titulo: "Cerrar atención"
-estado: Pendiente de aprobación
+estado: En desarrollo
 epica: "[[EP-007-operacion-profesional-y-administrativa]]"
 esfuerzo: Alto
 sprint_sugerido: "Incremento 6"
