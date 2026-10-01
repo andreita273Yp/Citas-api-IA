@@ -1,4 +1,5 @@
 package co.edu.fcv.citas.catalog.domain;
 
-public record CatalogItem(String code, String name) {
+/** Elemento de un catálogo fijo de solo lectura. */
+public record CatalogItem(long id, String code, String name) {
 }

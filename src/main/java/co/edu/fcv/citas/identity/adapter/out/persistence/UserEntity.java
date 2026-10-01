@@ -58,4 +58,8 @@ class UserEntity {
     String passwordHash() { return passwordHash; }
     boolean active() { return active; }
     Set<RoleEntity> roles() { return roles; }
+
+    void changePasswordHash(String hash) { this.passwordHash = hash; }
+
+    void changePhone(String value) { this.phone = value; }
 }

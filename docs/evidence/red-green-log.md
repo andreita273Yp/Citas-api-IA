@@ -95,3 +95,38 @@ Tests run: 74, Failures: 1   (la restante: recuperación de contraseña, HU-008/
 **Estabilidad de concurrencia:** `hu022_ca02_concurrentBookingsOfTheSameSlotProduceExactlyOneAppointment` y `ca04_concurrentRefreshWithTheSameTokenAllowsExactlyOneRotation` se repitieron 5 veces (`scripts/repeat-concurrency.sh`): 5/5 sin fallos.
 
 **Frontend (Vitest):** `book-appointment.spec.ts` detectó que el aviso "Ese horario acaba de ser tomado" se borraba al recargar la disponibilidad tras un 409. Se corrigió (`search(true)` conserva el aviso). Resultado: 22/22.
+
+## 2026-10-01 · Paso 4 (S4-A · HU-008 a HU-013)
+
+**Comando:**
+
+```
+docker compose exec -T citas-api-dev mvn -B test -Dtest=PasswordRecoveryIntegrationTest,ProfileAndAffiliationIntegrationTest,InsuranceCatalogAdministrationIntegrationTest
+```
+
+**RED (18 pruebas, 14 fallos):**
+
+```
+Tests run: 6, Failures: 6 -- PasswordRecoveryIntegrationTest  (latestToken: Status expected:<200> but was:<404>)
+Tests run: 5, Failures: 4 -- InsuranceCatalogAdministrationIntegrationTest  (Status expected:<201> but was:<200>)
+Tests run: 7, Failures: 4 -- ProfileAndAffiliationIntegrationTest
+ProfileAndAffiliationIntegrationTest.hu010_ca02_ca03_onlyThePhoneCanBeUpdatedAndItIsValidated:77 Status expected:<400> but was:<200>
+ProfileAndAffiliationIntegrationTest.hu011_ca01_userAssociatesAValidPlanAndGetsEpsAndRegimeFromIt:86 Status expected:<204> but was:<200>
+```
+
+**Causas funcionales:**
+
+- La recuperación respondía 202 sin generar ni entregar token, y no existían el buzón local ni el restablecimiento.
+- El teléfono aceptaba cualquier texto ("abc").
+- La afiliación exigía `regimeCode` aparte, lo que duplicaba el régimen del plan.
+- Un plan nuevo tomaba el primer régimen de la lista.
+- Las altas respondían 200 en lugar de 201.
+
+**GREEN:**
+
+```
+Tests run: 6, Failures: 0 -- PasswordRecoveryIntegrationTest
+Tests run: 5, Failures: 0 -- InsuranceCatalogAdministrationIntegrationTest
+Tests run: 7, Failures: 0 -- ProfileAndAffiliationIntegrationTest
+Tests run: 89, Failures: 0, Errors: 0   (suite completa en verde por primera vez)
+```

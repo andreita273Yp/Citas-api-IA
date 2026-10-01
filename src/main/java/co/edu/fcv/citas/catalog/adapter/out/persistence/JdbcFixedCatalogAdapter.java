@@ -27,8 +27,8 @@ public class JdbcFixedCatalogAdapter implements FixedCatalogReadPort {
     public List<CatalogItem> findByType(String type) {
         String table = TABLES.get(type);
         if (table == null) throw new IllegalArgumentException("Catálogo desconocido: " + type);
-        return db.query("select code, name from " + table + " order by id",
-                (rs, n) -> new CatalogItem(rs.getString(1), rs.getString(2)));
+        return db.query("select id, code, name from " + table + " order by id",
+                (rs, n) -> new CatalogItem(rs.getLong(1), rs.getString(2), rs.getString(3)));
     }
 
     @Override

@@ -19,6 +19,11 @@ public abstract sealed class IdentityException extends RuntimeException {
         public InvalidCredentials() { super("Credenciales inválidas"); }
     }
 
+    /** Token de recuperación inexistente, vencido o ya usado (401). */
+    public static final class InvalidResetToken extends IdentityException {
+        public InvalidResetToken() { super("El enlace de recuperación es inválido o venció"); }
+    }
+
     /** Refresh ausente, falsificado, vencido, revocado o reutilizado (401). */
     public static final class InvalidSession extends IdentityException {
         public InvalidSession() { super("Refresh inválido"); }

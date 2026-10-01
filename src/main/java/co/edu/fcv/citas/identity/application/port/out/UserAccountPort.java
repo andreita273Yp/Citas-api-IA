@@ -16,4 +16,8 @@ public interface UserAccountPort {
     Optional<UserAccount> findActiveByEmail(EmailAddress email);
 
     Optional<UserAccount> findActiveById(long id);
+
+    void changePassword(long userId, String passwordHash);
+
+    void changePhone(long userId, String phone);
 }

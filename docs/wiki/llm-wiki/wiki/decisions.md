@@ -32,6 +32,17 @@ Sustituye, donde contradiga, a la decisión del 2026-09-24.
 - `change_source` admite solo `SYSTEM`, `USER` y `ADMIN` (RF-19). El cierre de atención de un PROFESSIONAL se registra como `USER`, con el actor en `changed_by_user_id`.
 - Las pruebas de integración usan MySQL real en `<DB_NAME>_test` (creada por `database/init/01-test-database.sh`), recreada con Flyway clean+migrate en cada ejecución, en lugar de H2.
 
+## DECISIÓN — 2026-10-01 · Identidad ampliada y aseguramiento (Fase 4)
+
+- **Recuperación de contraseña:**
+  - El token es aleatorio de 256 bits (base64url), vence en 30 minutos y se usa una sola vez. Solo se persiste su hash SHA-256, y una solicitud nueva invalida las anteriores.
+  - Restablecer revoca todas las sesiones refresh del usuario.
+- **Entrega del token:** como no hay SMTP (RF-03 lo permite), se usa un buzón local en memoria que solo lee ADMIN y solo existe con `RECOVERY_LOCAL_MAILBOX=true`, el valor por defecto en local. **En cualquier entorno compartido debe ponerse en `false`**: entonces el token no se entrega y solo se registra el evento, sin datos.
+- **Perfil:** solo el teléfono es editable.
+- **Afiliación:** referencia solo al plan; EPS y régimen se derivan de él (RF-04). Hay a lo sumo una afiliación vigente por usuario, y volver a elegir un plan reactiva su fila en lugar de duplicarla. La afiliación es opcional y no condiciona búsqueda ni reserva.
+- **EPS y planes:** se desactivan en lugar de borrarse. Un plan exige un régimen explícito. Desactivar una EPS saca sus planes del catálogo de selección sin tocar las afiliaciones existentes.
+- `IdentityExtensionController` se reemplazó por `ProfileController` (identity) e `InsuranceController` (insurance).
+
 ## DECISIÓN — 2026-10-01 · Agenda y reserva (Fase 3)
 
 - "Ahora" sale de un `Clock` de negocio en `America/Bogota`. RN-06 rechaza bloques que ya empezaron y citas cuyo inicio no es futuro, y la disponibilidad nunca ofrece inicios pasados.

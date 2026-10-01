@@ -24,3 +24,4 @@ app:
     access-ttl: PT15M
     refresh-ttl: P7D
   cookie.secure: false
+  recovery.local-mailbox: true

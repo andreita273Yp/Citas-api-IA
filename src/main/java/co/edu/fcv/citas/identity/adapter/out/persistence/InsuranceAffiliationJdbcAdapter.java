@@ -16,7 +16,8 @@ class InsuranceAffiliationJdbcAdapter implements InsuranceAffiliationPort {
 
     @Override
     public boolean isActivePlan(long planId) {
-        return db.queryForObject("select count(*) from eps_plans where id=? and active=true", Integer.class, planId) > 0;
+        return db.queryForObject("select count(*) from eps_plans p join eps e on e.id=p.eps_id where p.id=? and p.active=true and e.active=true",
+                Integer.class, planId) > 0;
     }
 
     @Override

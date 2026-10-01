@@ -49,9 +49,25 @@ class UserAccountJpaAdapter implements UserAccountPort {
         return users.findByIdAndActiveTrue(id).map(UserAccountJpaAdapter::toDomain);
     }
 
+    @Override
+    public void changePassword(long userId, String passwordHash) {
+        users.findById(userId).ifPresent(u -> {
+            u.changePasswordHash(passwordHash);
+            users.flush();
+        });
+    }
+
+    @Override
+    public void changePhone(long userId, String phone) {
+        users.findById(userId).ifPresent(u -> {
+            u.changePhone(phone);
+            users.flush();
+        });
+    }
+
     private static UserAccount toDomain(UserEntity e) {
         PersonalData personal = new PersonalData(e.firstName(), e.lastName(), new Document(e.documentType(), e.documentNumber()),
-                EmailAddress.of(e.email()), e.phone() == null ? "-" : e.phone());
+                EmailAddress.of(e.email()), e.phone());
         return new UserAccount(e.id(), personal, e.passwordHash(), e.active(),
                 e.roles().stream().map(r -> Role.valueOf(r.code())).collect(Collectors.toSet()));
     }

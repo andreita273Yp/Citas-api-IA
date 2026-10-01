@@ -13,4 +13,7 @@ public interface RefreshSessionPort {
     boolean consume(String sessionHash);
 
     void revoke(String sessionHash);
+
+    /** Revoca todas las sesiones vigentes del usuario (p. ej. tras cambiar la contraseña). */
+    void revokeAll(long userId);
 }

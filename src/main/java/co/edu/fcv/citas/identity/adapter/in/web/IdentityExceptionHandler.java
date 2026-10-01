@@ -17,6 +17,7 @@ class IdentityExceptionHandler {
             case IdentityException.Duplicate ignored -> HttpStatus.CONFLICT;
             case IdentityException.InvalidCredentials ignored -> HttpStatus.UNAUTHORIZED;
             case IdentityException.InvalidSession ignored -> HttpStatus.UNAUTHORIZED;
+            case IdentityException.InvalidResetToken ignored -> HttpStatus.UNAUTHORIZED;
         };
         return ApiExceptionHandler.problem(status, e.getMessage());
     }

@@ -48,6 +48,17 @@ public class TestDatabase {
                     blockId, date.atTime(t), date.atTime(t.plusMinutes(30)));
     }
 
+    public long insertEps(String code, String name) {
+        db.update("insert into eps(code,name,active) values(?,?,true)", code, name);
+        return db.queryForObject("select id from eps where code=?", Long.class, code);
+    }
+
+    public long insertPlan(long epsId, String regimeCode, String code, String name) {
+        db.update("insert into eps_plans(eps_id,regime_id,code,name,active) values(?,(select id from insurance_regimes where code=?),?,?,true)",
+                epsId, regimeCode, code, name);
+        return db.queryForObject("select id from eps_plans where eps_id=? and code=?", Long.class, epsId, code);
+    }
+
     public void grantRole(String email, String roleCode) {
         db.update("insert ignore into user_roles(user_id, role_id) "
                 + "select u.id, r.id from users u join roles r on r.code = ? where u.email = ?", roleCode, email);

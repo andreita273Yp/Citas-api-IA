@@ -12,6 +12,14 @@ Las HU-001 a HU-036 existen en `docs/FCV Dev/scrum/`. HU-001/002/003 tienen avan
 
 El catálogo de ocho subagentes fue versionado en `docs/FCV Dev/subagents/` y enlazado desde el orquestador. `citas-web` contiene trabajo local React/Vite de autenticación y pruebas; no debe declararse completado hasta ejecutar build, typecheck, tests y verificación cross-repo.
 
+## HECHO — 2026-10-01 · Paso 4 (Fase 4, S4-A)
+
+HU-008 a HU-013 quedan `Completada`. Evidencia:
+
+- Backend: `PasswordRecoveryIntegrationTest` (6), `ProfileAndAffiliationIntegrationTest` (7) e `InsuranceCatalogAdministrationIntegrationTest` (5).
+- Frontend: `identity-api.spec.ts`; pantallas `IdentityDashboard` y `AdminInsurance`.
+- `IdentityExtensionIntegrationTest` se retiró: la reemplazan las suites anteriores, y su prueba de recuperación había sido el RED abierto desde el Paso 0.
+
 ## HECHO — 2026-10-01 · Paso 3 (Fase 3, S3-B)
 
 HU-017 a HU-024 quedan `Completada`. Evidencia:

@@ -68,6 +68,25 @@ Todas las rutas `/api/v1/admin/**` exigen rol ADMIN en `SecurityConfig`: sin tok
 | `PUT /professionals/{id}/specialties` | `assignments[{specialtyId, primary}]` | `200`. Reemplaza el conjunto: una o más especialidades activas y exactamente una primaria. Las que salen quedan `active=false` (se conserva el historial) |
 | `PUT /professionals/{id}/locations` | `locationIds[]` | `200`. Solo sedes fijas activas (HIC=1, ICV=2), sin repetidos |
 
+## Identidad ampliada y aseguramiento (HU-008 a HU-013)
+
+### DECISIÓN — 2026-10-01
+
+| Operación | Rol | Entrada | Éxito / errores |
+|---|---|---|---|
+| `POST /api/v1/auth/password-recovery` | público | `email` | Siempre `202` sin cuerpo, exista o no la cuenta |
+| `POST /api/v1/auth/password-reset` | público | `token`, `password`, `confirmation` | `204`; revoca todas las sesiones refresh. Confirmación distinta o contraseña débil → `400`; token inválido, vencido o usado → `401` |
+| `GET /api/v1/admin/local-mailbox/password-recovery` | ADMIN | — | `200` `[{email, token, expiresAt, createdAt}]`, del más reciente al más antiguo. Solo existe con `app.recovery.local-mailbox=true` (desarrollo); si no, `404` |
+| `GET /api/v1/users/me` | autenticado | — | `200` `{id, firstName, lastName, documentType, documentNumber, email, phone, roles}` |
+| `PATCH /api/v1/users/me` | autenticado | `phone` (otros campos se ignoran) | `200` perfil; teléfono inválido (7 a 15 dígitos, `+` opcional) → `400` |
+| `GET /api/v1/users/me/affiliation` | autenticado | — | `200` `{planId, planName, epsId, epsName, regimeCode, regimeName, membershipNumber, validFrom}` o `204` sin afiliación |
+| `PUT /api/v1/users/me/affiliation` | autenticado | `planId`, `membershipNumber` | `200`. El régimen y la EPS salen del plan: ya no se envía `regimeCode`. Plan inexistente, inactivo o de EPS inactiva → `400` |
+| `DELETE /api/v1/users/me/affiliation` | autenticado | — | `204`; termina la vigente |
+| `GET /api/v1/catalogs/eps` · `GET /api/v1/catalogs/eps-plans?epsId` | público | — | Solo EPS activas y planes activos de EPS activas; el plan incluye `regimeId/regimeCode/regimeName` |
+| `GET/POST /api/v1/admin/eps` · `PATCH /api/v1/admin/eps/{id}` | ADMIN | `code`, `name` / `name?`, `active?` | `201`/`200`; duplicado → `409`; no hay `DELETE` (`405`) |
+| `GET/POST /api/v1/admin/eps-plans` · `PATCH /api/v1/admin/eps-plans/{id}` | ADMIN | `epsId`, `regimeId`, `code`, `name` / `name?`, `regimeId?`, `active?` | `201`/`200`; EPS o régimen inexistente → `400`; código repetido en la EPS → `409`; no hay `DELETE` |
+| `GET /api/v1/catalogs/regimes` (y demás catálogos fijos) | autenticado | — | Cada elemento incluye ahora `id`, además de `code` y `name` |
+
 ## Agenda, disponibilidad y reserva (HU-018 a HU-024)
 
 ### DECISIÓN — 2026-10-01

@@ -29,3 +29,5 @@ app:
   cors:
     allowed-origin: ${FRONTEND_ORIGIN:http://localhost:4200}
   cookie.secure: ${COOKIE_SECURE:false}
+  # Buzón local de recuperación de contraseña (desarrollo, sin SMTP). Desactivar fuera de local.
+  recovery.local-mailbox: ${RECOVERY_LOCAL_MAILBOX:true}

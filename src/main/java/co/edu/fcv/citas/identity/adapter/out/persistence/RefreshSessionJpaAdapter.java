@@ -29,6 +29,11 @@ class RefreshSessionJpaAdapter implements RefreshSessionPort {
     }
 
     @Override
+    public void revokeAll(long userId) {
+        tokens.revokeAll(userId, LocalDateTime.now());
+    }
+
+    @Override
     public void revoke(String sessionHash) {
         LocalDateTime now = LocalDateTime.now();
         tokens.findByTokenHash(sessionHash).filter(t -> t.activeAt(now)).ifPresent(t -> t.revoke(now));
