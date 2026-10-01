@@ -51,7 +51,7 @@ Debe soportar entidades/capacidades del requisito 3FN, sin copiar la solución d
 |---|---|---|---|
 | CA-01 | Cumple | `V6__reference_3fn_model.sql`; `database/reference/README_DB.md` | Catálogos por FK, N:M con puentes (`user_roles`, `professional_specialties`, `professional_locations`), afiliación referencia el plan y desde él EPS/régimen. |
 | CA-02 | Cumple | `V6__reference_3fn_model.sql` | Usuarios, roles, tokens refresh/recuperación, oferta, bloques, slots de 30 min, citas, historial y reprogramación. |
-| CA-03 | Parcial | `professional_slots` (UK bloque+inicio, `appointment_id`); retención de reprogramación por slots (`decisions.md` 2026-10-01); smoke REST manual 28/28 | La prueba automatizada de slots consecutivos y doble reserva se agrega en la Fase 3 (HU-021 a HU-024). |
+| CA-03 | Parcial | `professional_slots` (UK bloque+inicio, `appointment_id`); `BookingIntegrationTest` (60 min = 2 slots consecutivos, doble reserva concurrente), `SchedulingDomainTest` | Slots consecutivos y protección de doble reserva probados (Fase 3). Falta la prueba automatizada de conservar la cita original con reprogramación pendiente (HU-027/028, Fase 5). |
 | DoD unicidad | Cumple | `RegistrationIntegrationTest` (email y documento únicos, carrera resuelta por UK) | Pruebas sobre MySQL real `<DB>_test`. |
 ## Historial de validación
 - 2026-09-17 — HU creada en estado `Pendiente de aprobación`.

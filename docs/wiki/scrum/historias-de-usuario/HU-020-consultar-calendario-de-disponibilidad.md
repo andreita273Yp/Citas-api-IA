@@ -2,7 +2,7 @@
 id: HU-020
 tipo: historia-de-usuario
 titulo: "Consultar calendario de disponibilidad"
-estado: Pendiente de aprobación
+estado: Completada
 epica: "[[EP-004-disponibilidad-del-profesional]]"
 esfuerzo: Medio
 sprint_sugerido: "Incremento 4"
@@ -29,9 +29,9 @@ La agenda de disponibilidad no sustituye la agenda visible de citas aprobadas.
 ## Esfuerzo
 **Nivel:** Medio. **Justificación de dificultad:** requiere filtros y aislamiento de datos en una vista de calendario.
 ## Tareas de desarrollo
-- [ ] **T-01 — Definir consulta/filtros.** Dificultad: Medio. Acordar fecha/sede y representación sin imponer UI.
-- [ ] **T-02 — Aplicar ownership.** Dificultad: Medio. Restringir al calendario del autenticado.
-- [ ] **T-03 — Entregar calendario y pruebas.** Dificultad: Medio. Probar filtro y ausencia de agenda ajena.
+- [x] **T-01 — Definir consulta/filtros.** Dificultad: Medio. Acordar fecha/sede y representación sin imponer UI.
+- [x] **T-02 — Aplicar ownership.** Dificultad: Medio. Restringir al calendario del autenticado.
+- [x] **T-03 — Entregar calendario y pruebas.** Dificultad: Medio. Probar filtro y ausencia de agenda ajena.
 ## Criterios de aceptación
 ### CA-01 — Visualización propia
 **Dado** bloques propios publicados, **cuando** PROFESSIONAL consulta su calendario, **entonces** ve fecha, franja y sede de sus bloques.
@@ -40,15 +40,17 @@ La agenda de disponibilidad no sustituye la agenda visible de citas aprobadas.
 ### CA-03 — Aislamiento
 **Dado** otro profesional, **cuando** intenta consultar calendario ajeno, **entonces** no obtiene esos bloques.
 ## Definition of Done
-- [ ] CA-01 a CA-03 probados en autorización/REST y cliente aplicable.
-- [ ] No se exponen datos de USER ni información ajena; trazabilidad actualizada.
+- [x] CA-01 a CA-03 probados en autorización/REST y cliente aplicable.
+- [x] No se exponen datos de USER ni información ajena; trazabilidad actualizada.
 ## Evidencia de validación
 | Elemento | Resultado | Evidencia | Observación |
 |---|---|---|---|
-| CA-01 | Pendiente | — | — |
-| CA-02 | Pendiente | — | — |
-| CA-03 / DoD | Pendiente | — | — |
+| CA-01 | Cumple | `AgendaBlocksIntegrationTest.hu020_professionalSeesOnlyOwnBlocksFilteredByDateAndLocation` | Fecha, franja, sede, slots y ocupados; sin datos de pacientes. |
+| CA-02 | Cumple | Misma prueba | Filtros `from`, `to`, `locationId`. |
+| CA-03 | Cumple | Misma prueba; `onlyProfessionalsManageBlocks` | Cada profesional ve solo sus bloques; USER/ADMIN → 403. |
+| DoD cliente | Cumple | `citas-web` `ProfessionalAgenda` (Calendario con filtros) | Contra REST real. |
 ## Historial de validación
 - 2026-09-17 — HU creada en estado `Pendiente de aprobación`.
+- 2026-10-01 — RED 2026-10-01: 23 de 24 pruebas de la Fase 3 fallaron antes de implementar (endpoints inexistentes, reserva en el pasado aceptada, PROFESSIONAL podía reservar); GREEN tras el módulo `scheduling` hexagonal. Estado `Completada`.
 ## Notas y decisiones
 - El formato visual queda bajo el diseño aprobado.

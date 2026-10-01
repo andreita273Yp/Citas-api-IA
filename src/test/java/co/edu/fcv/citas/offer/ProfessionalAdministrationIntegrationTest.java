@@ -151,7 +151,7 @@ class ProfessionalAdministrationIntegrationTest {
         LocalDate date = LocalDate.now().plusDays(2);
         database.publishBlock(id, 1, date, LocalTime.of(8, 0), LocalTime.of(9, 0));
         book(id, 1, internal, date + "T08:00").andExpect(status().isConflict());
-        book(id, 1, cardiology, date + "T08:00").andExpect(status().isOk());
+        book(id, 1, cardiology, date + "T08:00").andExpect(status().isCreated());
     }
 
     // ---------------------------------------------------------------- HU-017

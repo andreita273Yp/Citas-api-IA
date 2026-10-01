@@ -1,5 +1,6 @@
 package co.edu.fcv.citas.scheduling;
 
+import co.edu.fcv.citas.scheduling.adapter.out.persistence.AppointmentStatusHistory;
 import co.edu.fcv.citas.shared.web.ApiException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;

@@ -12,6 +12,14 @@ Las HU-001 a HU-036 existen en `docs/FCV Dev/scrum/`. HU-001/002/003 tienen avan
 
 El catálogo de ocho subagentes fue versionado en `docs/FCV Dev/subagents/` y enlazado desde el orquestador. `citas-web` contiene trabajo local React/Vite de autenticación y pruebas; no debe declararse completado hasta ejecutar build, typecheck, tests y verificación cross-repo.
 
+## HECHO — 2026-10-01 · Paso 3 (Fase 3, S3-B)
+
+HU-017 a HU-024 quedan `Completada`. Evidencia:
+
+- Backend: `AgendaBlocksIntegrationTest` (9), `BookingIntegrationTest` (10), `SpecializedDecisionIntegrationTest` (5) y `SchedulingDomainTest` (7).
+- Frontend: `booking-api.spec.ts` y `book-appointment.spec.ts`; pantallas `ProfessionalAgenda`, `BookAppointment` y la bandeja de `OperationsPanel`.
+- Evidencia S3 consolidada en `docs/evidence/S3_EVIDENCE.md`. El hook de pre-commit y la demostración del secreto ficticio quedan para el Paso 7.
+
 ## HECHO — 2026-10-01 · Paso 2 (Fase 2, S3-A)
 
 HU-014, HU-015 y HU-016 quedan `Completada`; HU-017 queda `En desarrollo` hasta probar su CA-03 con los bloques de HU-018.

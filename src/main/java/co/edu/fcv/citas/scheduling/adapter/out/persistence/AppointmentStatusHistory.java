@@ -1,5 +1,7 @@
-package co.edu.fcv.citas.scheduling;
+package co.edu.fcv.citas.scheduling.adapter.out.persistence;
 
+import co.edu.fcv.citas.scheduling.application.port.out.BookingPorts.StatusHistoryPort;
+import co.edu.fcv.citas.scheduling.domain.AppointmentStatus;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,10 +14,15 @@ import org.springframework.stereotype.Component;
  * (un PROFESSIONAL registra como USER; el actor queda en changed_by_user_id).
  */
 @Component
-public class AppointmentStatusHistory {
+public class AppointmentStatusHistory implements StatusHistoryPort {
   private final JdbcTemplate db;
 
   public AppointmentStatusHistory(JdbcTemplate db) { this.db = db; }
+
+  @Override
+  public void record(long appointmentId, AppointmentStatus status, Long actorUserId, String source, String reason) {
+    record(appointmentId, status.name(), actorUserId, source, reason);
+  }
 
   public void record(long appointmentId, String statusCode, Long actorUserId, String source, String reason) {
     db.update("insert into appointment_status_history(appointment_id,status_id,changed_by_user_id,change_source,reason) "

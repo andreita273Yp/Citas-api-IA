@@ -68,6 +68,27 @@ Todas las rutas `/api/v1/admin/**` exigen rol ADMIN en `SecurityConfig`: sin tok
 | `PUT /professionals/{id}/specialties` | `assignments[{specialtyId, primary}]` | `200`. Reemplaza el conjunto: una o más especialidades activas y exactamente una primaria. Las que salen quedan `active=false` (se conserva el historial) |
 | `PUT /professionals/{id}/locations` | `locationIds[]` | `200`. Solo sedes fijas activas (HIC=1, ICV=2), sin repetidos |
 
+## Agenda, disponibilidad y reserva (HU-018 a HU-024)
+
+### DECISIÓN — 2026-10-01
+
+Formatos: fecha `YYYY-MM-DD`, hora `HH:mm`, inicio de cita `YYYY-MM-DDTHH:mm`, en la zona `America/Bogota`. Todo se alinea a la cuadrícula de 30 minutos.
+
+| Operación | Rol | Entrada | Éxito / errores |
+|---|---|---|---|
+| `GET /api/v1/professional/me` | PROFESSIONAL | — | `200` perfil propio con sedes y especialidades; un usuario sin registro profesional → `403` |
+| `GET /api/v1/professional/blocks` | PROFESSIONAL | `from?`, `to?`, `locationId?` | `200` bloques propios: `id`, `locationId`, `locationCode`, `date`, `startTime`, `endTime`, `slots`, `bookedSlots` |
+| `POST /api/v1/professional/blocks` | PROFESSIONAL | `locationId`, `date`, `startTime`, `endTime` | `201`. Pasado, fuera de cuadrícula o fin ≤ inicio → `400`; profesional inactivo, sede no asignada o solape → `409` |
+| `PUT /api/v1/professional/blocks/{id}` | PROFESSIONAL | igual que POST | `200`, regenera los slots. Bloque ajeno → `404`; ya iniciado o con citas comprometidas → `409` |
+| `DELETE /api/v1/professional/blocks/{id}` | PROFESSIONAL | — | `204`; mismas restricciones que PUT |
+| `GET /api/v1/catalogs/specialties` | autenticado | `type?` = `GENERAL` \| `SPECIALIZED` | `200` especialidades activas con `durationMinutes`, `general`, `requiresAdminApproval` |
+| `GET /api/v1/catalogs/professionals` | autenticado | `specialtyId`, `locationId` | `200` profesionales que ofrecen esa especialidad en esa sede |
+| `GET /api/v1/availability` | autenticado | `specialtyId`, `date`, `locationId?`, `professionalId?` | `200` inicios reservables: `professionalId`, `professionalName`, `locationId`, `locationCode`, `startAt`, `endAt`, `durationMinutes`. Especialidad inactiva → `404`. Nunca devuelve inicios pasados; 60 min exige 2 slots libres consecutivos |
+| `POST /api/v1/appointments` | USER | `professionalId`, `locationId`, `specialtyId`, `startAt`, `reason?` | `201` (antes `200`) con `id`, `status` (`APPROVED` para Medicina General, `REQUESTED` para el resto), `startAt`, `endAt`, `durationMinutes`. Pasado o fuera de cuadrícula → `400`; otro rol → `403`; especialidad inactiva → `404`; no ofrecida o franja ocupada/retenida → `409` |
+| `POST /api/v1/admin/appointments/{id}/decision` | ADMIN | `decision` = `APPROVE` \| `REJECT`, `reason` (obligatorio en `REJECT`) | `200` `{id, status}`. Decisión inválida o rechazo sin motivo → `400`; inexistente → `404`; estado distinto de `REQUESTED` → `409` |
+
+Doble reserva (RN-01): `POST /appointments` bloquea los slots del rango con `SELECT ... FOR UPDATE`, verifica que estén libres y sean consecutivos, y los asigna con un `UPDATE ... WHERE appointment_id IS NULL` cuyo conteo debe coincidir; si no coincide, se revierte la transacción. Un interbloqueo bajo concurrencia responde `409` reintentable.
+
 Efectos sobre la reserva (RN-07 y RN-08): `GET /catalogs/professionals`, `GET /availability` y `POST /appointments` solo aceptan un profesional activo, con la especialidad activa asociada y la sede asignada. Una especialidad inactiva o inexistente responde `404` y una combinación no ofrecida `409`. La duración siempre sale del catálogo.
 
 ### Impacto cross-repo antes del cambio REST

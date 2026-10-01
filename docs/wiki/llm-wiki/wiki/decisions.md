@@ -32,6 +32,15 @@ Sustituye, donde contradiga, a la decisión del 2026-09-24.
 - `change_source` admite solo `SYSTEM`, `USER` y `ADMIN` (RF-19). El cierre de atención de un PROFESSIONAL se registra como `USER`, con el actor en `changed_by_user_id`.
 - Las pruebas de integración usan MySQL real en `<DB_NAME>_test` (creada por `database/init/01-test-database.sh`), recreada con Flyway clean+migrate en cada ejecución, en lugar de H2.
 
+## DECISIÓN — 2026-10-01 · Agenda y reserva (Fase 3)
+
+- "Ahora" sale de un `Clock` de negocio en `America/Bogota`. RN-06 rechaza bloques que ya empezaron y citas cuyo inicio no es futuro, y la disponibilidad nunca ofrece inicios pasados.
+- Un profesional no puede tener bloques solapados el mismo día, aunque sean en sedes distintas: no puede estar en dos lugares a la vez. Bloques adyacentes (12:00–14:00 y 14:00–16:00) son válidos y sus slots se encadenan para citas de 60 min.
+- Editar o eliminar un bloque solo se permite si es futuro y ninguno de sus slots tiene `appointment_id`. Eliminar borra el bloque y sus slots, porque no tienen historial ni citas asociadas.
+- Solo un actor con rol USER reserva, y siempre para sí mismo. PROFESSIONAL y ADMIN sin rol USER reciben `403`.
+- Aprobar exige que la cita aún no haya empezado. Rechazar libera los slots en la misma transacción.
+- El módulo `scheduling` sigue la estructura hexagonal. `AppointmentLifecycleController` y `OperationsController` (Fases 5 y 6) siguen con SQL en controladores hasta esas fases.
+
 ## DECISIÓN — 2026-10-01 · Oferta de atención (Fase 2)
 
 - Las especialidades que crea ADMIN son siempre especializadas: requieren aprobación (RN-03). `is_general` solo lo tiene Medicina General, por seed.
