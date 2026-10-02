@@ -49,6 +49,29 @@ interface ProfessionalSlotJpaRepository extends JpaRepository<ProfessionalSlotEn
     @Modifying(flushAutomatically = true, clearAutomatically = true)
     @Query("delete from ProfessionalSlotEntity s where s.blockId = :blockId")
     int deleteByBlock(@Param("blockId") Long blockId);
+
+    @Query("select count(s) from ProfessionalSlotEntity s where s.appointmentId = :appointmentId and s.startAt >= :start and s.endAt <= :end")
+    long countHeld(@Param("appointmentId") Long appointmentId, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    @Modifying(flushAutomatically = true, clearAutomatically = true)
+    @Query("update ProfessionalSlotEntity s set s.appointmentId = null where s.appointmentId = :appointmentId and s.startAt >= :start and s.endAt <= :end")
+    int releaseInside(@Param("appointmentId") Long appointmentId, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    @Modifying(flushAutomatically = true, clearAutomatically = true)
+    @Query("update ProfessionalSlotEntity s set s.appointmentId = null where s.appointmentId = :appointmentId and (s.startAt < :start or s.endAt > :end)")
+    int releaseOutside(@Param("appointmentId") Long appointmentId, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+}
+
+interface RescheduleRequestJpaRepository extends JpaRepository<RescheduleRequestEntity, Long> {
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select r from RescheduleRequestEntity r where r.id = :id")
+    Optional<RescheduleRequestEntity> lockById(@Param("id") Long id);
+
+    boolean existsByAppointmentIdAndStatusId(Long appointmentId, Long statusId);
+
+    List<RescheduleRequestEntity> findByAppointmentIdAndStatusId(Long appointmentId, Long statusId);
+
+    Optional<RescheduleRequestEntity> findFirstByAppointmentIdOrderByIdDesc(Long appointmentId);
 }
 
 interface AppointmentJpaRepository extends JpaRepository<AppointmentEntity, Long> {

@@ -47,6 +47,26 @@ class ProfessionalSlotEntity {
 }
 
 @Entity
+@Table(name = "reschedule_requests")
+class RescheduleRequestEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Long id;
+    @Column(name = "appointment_id", nullable = false) Long appointmentId;
+    @Column(name = "requested_by_user_id", nullable = false) Long requestedByUserId;
+    @Column(name = "requested_location_id", nullable = false) Long locationId;
+    @Column(name = "status_id", nullable = false) Long statusId;
+    @Column(name = "previous_start_at", nullable = false) LocalDateTime previousStart;
+    @Column(name = "previous_end_at", nullable = false) LocalDateTime previousEnd;
+    @Column(name = "requested_start_at", nullable = false) LocalDateTime start;
+    @Column(name = "requested_end_at", nullable = false) LocalDateTime end;
+    @Column(name = "decision_reason") String decisionReason;
+    @Column(name = "decided_by_user_id") Long decidedByUserId;
+    @Column(name = "decided_at") LocalDateTime decidedAt;
+    @Column(name = "patient_action_after_rejection") String patientAction;
+}
+
+@Entity
 @Table(name = "appointments")
 class AppointmentEntity {
     @Id

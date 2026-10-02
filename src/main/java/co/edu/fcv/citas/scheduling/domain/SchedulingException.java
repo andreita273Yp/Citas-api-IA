@@ -11,6 +11,9 @@ public abstract sealed class SchedulingException extends RuntimeException {
 
     public static final class NotFound extends SchedulingException {
         public NotFound(String message) { super(message); }
+
+        /** Una cita ajena se informa igual que una inexistente, para no revelar su existencia. */
+        public static NotFound notFoundAppointment() { return new NotFound("Cita no existe"); }
     }
 
     /** El estado actual impide la operación: solapamiento, franja ocupada, sede no asignada, transición inválida. */

@@ -32,6 +32,14 @@ Sustituye, donde contradiga, a la decisión del 2026-09-24.
 - `change_source` admite solo `SYSTEM`, `USER` y `ADMIN` (RF-19). El cierre de atención de un PROFESSIONAL se registra como `USER`, con el actor en `changed_by_user_id`.
 - Las pruebas de integración usan MySQL real en `<DB_NAME>_test` (creada por `database/init/01-test-database.sh`), recreada con Flyway clean+migrate en cada ejecución, en lugar de H2.
 
+## DECISIÓN — 2026-10-01 · Ciclo de vida de la cita (Fase 5)
+
+- **Cancelar** aplica a citas propias `REQUESTED` o `APPROVED` cuyo inicio es futuro. Libera todos los slots de la cita, incluida una franja retenida por reprogramación, y marca esa solicitud como `CANCELLED`.
+- **Reprogramar** conserva profesional, especialidad y duración; cambiar de profesional es una cita nueva. Admite otra sede solo si el profesional la tiene asignada y ofrece ahí la especialidad. Hay a lo sumo una solicitud `PENDING` por cita.
+- **Tras un rechazo** (RF-15), el USER elige conservar la cita (`/keep` → `KEEP_APPOINTMENT`) o cancelarla, lo que registra `CANCEL_APPOINTMENT` en `patient_action_after_rejection`.
+- **Auditoría:** la aprobación de una reprogramación se registra en el historial como `APPROVED` (fuente ADMIN, "Reprogramación aprobada"). La solicitud y el rechazo no cambian el estado de la cita: su traza queda en `reschedule_requests`.
+- `AppointmentLifecycleController` se reemplazó por `MyAppointmentsController` sobre `AppointmentLifecycleService`. Solo `OperationsController` (Fase 6) conserva SQL en el controlador.
+
 ## DECISIÓN — 2026-10-01 · Identidad ampliada y aseguramiento (Fase 4)
 
 - **Recuperación de contraseña:**

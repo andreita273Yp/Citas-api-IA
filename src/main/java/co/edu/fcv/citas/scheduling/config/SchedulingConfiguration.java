@@ -43,6 +43,16 @@ class SchedulingConfiguration {
     }
 
     @Bean
+    co.edu.fcv.citas.scheduling.application.AppointmentLifecycleService appointmentLifecycleService(
+            co.edu.fcv.citas.scheduling.application.port.out.LifecyclePorts.AppointmentQueryPort queries,
+            co.edu.fcv.citas.scheduling.application.port.out.LifecyclePorts.AppointmentWritePort appointments,
+            co.edu.fcv.citas.scheduling.application.port.out.LifecyclePorts.ReschedulePort reschedules, BookingPorts.SlotPort slots,
+            co.edu.fcv.citas.scheduling.application.port.out.LifecyclePorts.HeldSlotPort held, BookingPorts.OfferPort offer,
+            BookingPorts.StatusHistoryPort history, TransactionPort tx, Clock clock) {
+        return new co.edu.fcv.citas.scheduling.application.AppointmentLifecycleService(queries, appointments, reschedules, slots, held, offer, history, tx, clock);
+    }
+
+    @Bean
     DecideSpecializedRequestUseCase decideSpecializedRequestUseCase(BookingPorts.AppointmentPort appointments, BookingPorts.SlotPort slots,
                                                                     BookingPorts.StatusHistoryPort history, TransactionPort tx, Clock clock) {
         return new DecisionService(appointments, slots, history, tx, clock);

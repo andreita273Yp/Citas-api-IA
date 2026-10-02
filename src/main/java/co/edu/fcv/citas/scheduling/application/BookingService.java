@@ -53,7 +53,7 @@ public class BookingService implements BookAppointmentUseCase {
             if (!offer.offers(c.professionalId(), c.specialtyId(), c.locationId()))
                 throw new SchedulingException.Conflict("El profesional no ofrece esa especialidad en esa sede");
             List<LockedSlot> locked = slots.lock(c.professionalId(), c.locationId(), slot.start(), slot.end());
-            if (!coversExactly(locked, slot)) throw new SchedulingException.Conflict("El horario ya no está disponible");
+            if (!SlotCoverage.coversExactly(locked, slot)) throw new SchedulingException.Conflict("El horario ya no está disponible");
 
             AppointmentStatus status = specialty.general() ? AppointmentStatus.APPROVED : AppointmentStatus.REQUESTED;
             long id = appointments.create(new NewAppointment(patientUserId, c.professionalId(), c.locationId(), c.specialtyId(), status,
@@ -64,16 +64,5 @@ public class BookingService implements BookAppointmentUseCase {
             else history.record(id, status, patientUserId, "USER", "Solicitud especializada creada");
             return new Booked(id, status, c.professionalId(), c.locationId(), c.specialtyId(), slot.start(), slot.end(), slot.durationMinutes());
         });
-    }
-
-    /** Todos los slots libres y consecutivos, cubriendo exactamente la duración (RN-05). */
-    private static boolean coversExactly(List<LockedSlot> locked, BookingSlot slot) {
-        if (locked.size() != slot.slots()) return false;
-        LocalDateTime expected = slot.start();
-        for (LockedSlot s : locked) {
-            if (!s.free() || !s.start().equals(expected)) return false;
-            expected = s.end();
-        }
-        return expected.equals(slot.end());
     }
 }

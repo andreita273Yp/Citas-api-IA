@@ -68,6 +68,21 @@ Todas las rutas `/api/v1/admin/**` exigen rol ADMIN en `SecurityConfig`: sin tok
 | `PUT /professionals/{id}/specialties` | `assignments[{specialtyId, primary}]` | `200`. Reemplaza el conjunto: una o más especialidades activas y exactamente una primaria. Las que salen quedan `active=false` (se conserva el historial) |
 | `PUT /professionals/{id}/locations` | `locationIds[]` | `200`. Solo sedes fijas activas (HIC=1, ICV=2), sin repetidos |
 
+## Mis citas, cancelación y reprogramación (HU-025 a HU-028)
+
+### DECISIÓN — 2026-10-01
+
+Sustituye las rutas homónimas del ajuste V6. Los ids ahora son numéricos, no texto.
+
+| Operación | Rol | Entrada | Éxito / errores |
+|---|---|---|---|
+| `GET /api/v1/appointments` | autenticado (propias) | `status?`, `from?`, `to?` | `200`; cada cita incluye `id`, `status`, `locationId`, `locationCode`, `location`, `professionalId`, `professional`, `specialtyId`, `specialty`, `durationMinutes`, `startsAt`, `endsAt`, `reason`, `decisionReason` (solo si está rechazada) y `reschedule` (última solicitud o `null`). Estado desconocido o rango inválido → `400` |
+| `GET /api/v1/appointments/{id}` | dueño | — | `200`; una cita ajena o inexistente → `404` |
+| `POST /api/v1/appointments/{id}/cancel` | dueño | — | `200` cita `CANCELLED`. Libera todos sus slots y cancela su reprogramación pendiente. Pasada o terminal → `409` |
+| `POST /api/v1/appointments/{id}/reschedule-requests` | dueño | `startAt`, `locationId?` | `201` `{id, appointmentId, status=PENDING, locationId, locationCode, startAt, endAt, decisionReason, patientAction}`. Mantiene profesional, especialidad y duración. No aprobada o pasada, ya pendiente, franja ocupada o sede no ofrecida → `409`; fuera de cuadrícula o en el pasado → `400` |
+| `POST /api/v1/appointments/{id}/reschedule-requests/{requestId}/keep` | dueño | — | `204`; tras un rechazo registra `KEEP_APPOINTMENT`. Si no está rechazada o ya eligió → `409`. Cancelar tras un rechazo registra `CANCEL_APPOINTMENT` |
+| `POST /api/v1/admin/reschedule-requests/{id}/decision` | ADMIN | `decision` = `APPROVE` \| `REJECT`, `reason` (obligatorio en `REJECT`) | `200` con la solicitud. Aprobar mueve la cita y libera la franja anterior; rechazar libera la nueva. Ya decidida → `409`; inexistente → `404` |
+
 ## Identidad ampliada y aseguramiento (HU-008 a HU-013)
 
 ### DECISIÓN — 2026-10-01

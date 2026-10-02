@@ -130,3 +130,35 @@ Tests run: 5, Failures: 0 -- InsuranceCatalogAdministrationIntegrationTest
 Tests run: 7, Failures: 0 -- ProfileAndAffiliationIntegrationTest
 Tests run: 89, Failures: 0, Errors: 0   (suite completa en verde por primera vez)
 ```
+
+## 2026-10-01 · Paso 5 (S4-B · HU-025 a HU-028)
+
+**Comando:**
+
+```
+docker compose exec -T citas-api-dev mvn -B test -Dtest=AppointmentLifecycleIntegrationTest
+```
+
+**RED (11 pruebas, 8 fallos):**
+
+```
+hu025_ca01_ca02_…:73 No matching value at JSON path "$[?(@.id == 1)].locationCode"
+hu027_ca01_ca02_…:136 Status expected:<201> but was:<200>
+hu028_ca01_…, hu028_ca02_…, hu028_ca03_…, hu028_afterRejection… → requestReschedule: Status expected:<201> but was:<200>
+cancellingWithAPendingReschedule… → requestReschedule: Status expected:<201> but was:<200>
+```
+
+**Causas funcionales:**
+
+- La vista de la cita no traía código de sede ni ids de profesional y especialidad.
+- La solicitud de reprogramación respondía 200 sin estado visible en la cita.
+- No existía la elección del paciente tras un rechazo (RF-15).
+
+Las 3 pruebas que pasaban ya en RED (detalle ajeno, cancelación básica y restricciones de cancelación) cubrían comportamiento existente.
+
+**GREEN:**
+
+```
+Tests run: 11,  Failures: 0 -- AppointmentLifecycleIntegrationTest
+Tests run: 100, Failures: 0, Errors: 0
+```
