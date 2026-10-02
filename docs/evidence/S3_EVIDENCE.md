@@ -9,7 +9,7 @@ GOAL: Implementar y verificar de extremo a extremo el incremento S3:
 - ADMIN aprueba, o rechaza con motivo y libera los slots.
 - REST real entre Angular y Spring Boot, y una red de verificación que bloquea errores y secretos.
 
-ITERACIONES_USADAS: 1/3 para el núcleo funcional (Pasos 2 y 3 del plan). V8 a V10 (hook) se completan en el Paso 7.
+ITERACIONES_USADAS: 1/3 para el núcleo funcional (Pasos 2 y 3 del plan) y 1/3 para V8 a V10 (Paso 7).
 
 Entorno: Docker (`citas-api-dev`: Maven + Java 21; `citas-web-dev`: Node 24), MySQL 8.4 real. Las pruebas usan la base `<DB_NAME>_test`, que se recrea en cada ejecución. Fecha: 2026-10-01.
 
@@ -27,6 +27,9 @@ Todos los fallos son funcionales (estados HTTP y reglas de negocio). No hay erro
 - **Comando:** `docker compose exec -T citas-api-dev mvn -B test`
 - **Resultado:** `Tests run: 74, Failures: 1`. Las 35 pruebas S3 están en GREEN. La única falla, `IdentityExtensionIntegrationTest.recoveryIsGenericAndTokenIsSingleUse`, pertenece a HU-008/009 (S4) y es el RED de la Fase 4.
 - **Prueba REST manual sobre la app en ejecución con los datos demo:** 56/56 verificaciones, sin errores en el log.
+- **Estado final (Paso 7, 2026-10-01):**
+  - **Suite completa:** `Tests run: 110, Failures: 0, Errors: 0`, ya con S4 incluido.
+  - **Smoke REST versionado:** `scripts/smoke/run-smoke.ps1` → 104/104, 0 errores en el log.
 
 ## SLOTS_30
 
@@ -111,7 +114,7 @@ Todos los fallos son funcionales (estados HTTP y reglas de negocio). No hay erro
 
 - **build:** `docker compose exec citas-web-dev npm run build` → PASS (`Application bundle generation complete`).
 - **typecheck:** incluido en `ng build` y `ng test` (compilador Angular/TypeScript estricto) → PASS. `npm run lint` → `All files pass linting`.
-- **tests:** `npx ng test --watch=false` → 6 archivos, 22/22 PASS:
+- **tests:** `npx ng test --watch=false` → 6 archivos, 22/22 PASS al cierre de S3 (en el Paso 7: 10 archivos, 34/34):
   - `auth-api`, `auth.interceptor`, `offer-api`, `booking-api`, `book-appointment` y `app`.
   - `book-appointment` verifica que la UI muestra el estado decidido por el backend y maneja 409/400.
 - **REST real, sin mocks en estos flujos:**
@@ -120,13 +123,64 @@ Todos los fallos son funcionales (estados HTTP y reglas de negocio). No hay erro
   - `BookAppointment`: búsqueda y reserva.
   - `OperationsPanel`: aprobar o rechazar.
 
-## HOOK_FAIL
+## HOOK (V8)
 
-- Pendiente: Paso 7. Se demostrará con `FAKE_SECRET_FOR_S3_TEST_ONLY` contra un hook de pre-commit versionado.
+- **Mecanismo:** `.githooks/pre-commit` versionado en `citas-api` y en `citas-web`. Se activa una vez por clon con `git config core.hooksPath .githooks`.
+- **Siempre** (`check-secrets.sh`):
+  - Bloquea `.env` y `.env.*` staged, salvo `.env.example`.
+  - Revisa las líneas agregadas contra `secret-patterns`: marcador S3, llaves privadas, AWS, tokens de GitHub y Slack, JWT completos y asignaciones literales sensibles.
+  - Nunca imprime el valor encontrado.
+- **Si el commit toca código, o con `HOOK_FULL=1`:**
+  - `citas-api`: `mvn -B test` en `citas-api-dev`, con MySQL real.
+  - `citas-web`: `npm run lint`, `npx ng test --watch=false` y `npm run build` (typecheck) en `citas-web-dev`.
+- Cualquier fallo devuelve un código distinto de 0 y Git cancela el commit.
 
-## HOOK_PASS
+## HOOK_FAIL (V9)
 
-- Pendiente: Paso 7.
+Secreto **ficticio** en un archivo de código, más un `.env` ficticio (`DEMO_ONLY=1`). Ningún secreto real. El `.env` real del workspace no se abrió ni se tocó.
+
+```
+citas-api $ git commit -m 'demo V9: secreto ficticio'      # staged: hook-demo/.env y src/main/resources/hook-demo.properties
+pre-commit: FAIL — archivo .env en el commit:
+  hook-demo/.env
+pre-commit: FAIL — posible secreto en src/main/resources/hook-demo.properties (1 línea(s); contenido oculto)
+exit code: 1
+
+citas-api $ git commit -m 'demo V9: solo el secreto ficticio'
+pre-commit: FAIL — posible secreto en src/main/resources/hook-demo.properties (1 línea(s); contenido oculto)
+exit code: 1
+
+citas-web $ git commit -m 'demo V9 (web): secreto ficticio'   # staged: src/hook-demo.ts
+pre-commit: FAIL — posible secreto en src/hook-demo.ts (1 línea(s); contenido oculto)
+exit code: 1
+```
+
+En los tres casos no se creó ningún commit; `HEAD` siguió en `af4819e` y en `6a6a3aa`.
+
+## HOOK_PASS (V10)
+
+Los archivos de demostración se eliminaron por completo, del índice y del disco. Después se ejecutaron todas las validaciones (`HOOK_FULL=1`) sobre el commit real del Paso 7:
+
+```
+citas-api $ git grep -c FAKE_SECRET_FOR_S3_TEST_ONLY -- src pom.xml   → 0 coincidencias en código
+citas-api $ HOOK_FULL=1 .githooks/pre-commit
+pre-commit: secretos y .env OK
+pre-commit: ejecutando la suite backend (mvn test)…
+[INFO] Tests run: 110, Failures: 0, Errors: 0, Skipped: 0
+pre-commit: PASS
+exit code: 0
+
+citas-web $ git grep -c FAKE_SECRET_FOR_S3_TEST_ONLY -- src            → 0 coincidencias en código
+citas-web $ HOOK_FULL=1 .githooks/pre-commit
+pre-commit: secretos y .env OK
+pre-commit: npm run lint…                All files pass linting.
+pre-commit: npx ng test --watch=false…   Test Files 10 passed (10) · Tests 34 passed (34)
+pre-commit: npm run build…               Application bundle generation complete.
+pre-commit: PASS
+exit code: 0
+```
+
+**Commit permitido:** el hook vuelve a ejecutarse en el commit del Paso 7 de cada repositorio, cuyo hash queda en el historial de `develop`.
 
 ## COMMITS
 
@@ -137,11 +191,21 @@ Todos los fallos son funcionales (estados HTTP y reglas de negocio). No hay erro
   - `4339c3d`: feat(s3), pantallas ADMIN.
   - El commit del Paso 3 agrega `BookAppointment`, `ProfessionalAgenda` y la decisión en la bandeja.
 
+- **Pasos posteriores (S4 y red de verificación):**
+  - **citas-api:**
+    - `a31313a`: Paso 3, núcleo S3.
+    - `0dd8eaa`: Fase 4, recuperación, perfil y aseguramiento.
+    - `91d779f`: Fase 5, ciclo de vida de la cita.
+    - `af4819e`: Fase 6, operación y auditoría.
+    - Paso 7: hook y evidencia (este archivo).
+  - **citas-web:**
+    - `2da85a2`: Paso 3.
+    - `7b5523f`: Fase 4.
+    - `8330a38`: Fase 5.
+    - `6a6a3aa`: Fase 6.
+    - Paso 7: hook.
+
 ## PENDIENTES
 
-Solo funcionalidades fuera del alcance de S3:
-
-- Recuperación de contraseña, perfil y afiliación, y CRUD de EPS y planes (HU-008 a HU-013, S4).
-- Mis citas, cancelación y reprogramación (HU-025 a HU-028, S4).
-- Agenda del profesional y cierre de atención (HU-029/030), y bandeja unificada e historial con filtros (HU-031/032, S4).
-- Hook de pre-commit y la demostración con `FAKE_SECRET_FOR_S3_TEST_ONLY` (V8 a V10, Paso 7).
+- **Sin pendientes de S3 ni de S4:** HU-001 a HU-032 están en `Completada`, y V1 a V10 cuentan con evidencia.
+- **Fuera de este alcance:** las automatizaciones n8n (S5/S6) y el merge de `develop` a `main`, que se hará cuando el equipo lo decida.

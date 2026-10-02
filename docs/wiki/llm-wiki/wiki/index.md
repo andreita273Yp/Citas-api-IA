@@ -1,6 +1,10 @@
 # Índice de la LLM Wiki
 
-Última actualización: 2026-09-24. Fase 1 validó en Docker el contrato de identidad, el consumo Angular de autenticación y la publicación REST de catálogos fijos. No se ha implementado oferta, disponibilidad, citas ni n8n; esas capacidades conservan su contrato pendiente por HU.
+Última actualización: 2026-10-01.
+
+- **Implementado y verificado en Docker (HU-001 a HU-032):** el núcleo S2 a S4, es decir, identidad, oferta, agenda y reservas, ciclo de vida de la cita, operación profesional y administrativa, y auditoría.
+- **Red de verificación S3:** el hook pre-commit con detección de secretos y `.env` está versionado en ambos repositorios.
+- **Pendiente:** n8n (S5/S6).
 
 ## Lectura recomendada
 

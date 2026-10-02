@@ -32,6 +32,18 @@ Sustituye, donde contradiga, a la decisión del 2026-09-24.
 - `change_source` admite solo `SYSTEM`, `USER` y `ADMIN` (RF-19). El cierre de atención de un PROFESSIONAL se registra como `USER`, con el actor en `changed_by_user_id`.
 - Las pruebas de integración usan MySQL real en `<DB_NAME>_test` (creada por `database/init/01-test-database.sh`), recreada con Flyway clean+migrate en cada ejecución, en lugar de H2.
 
+## DECISIÓN — 2026-10-01 · Red de verificación pre-commit (Paso 7, S3 V8 a V10)
+
+- **Ubicación:** cada repositorio versiona su propio hook en `.githooks/`, porque son independientes y la raíz no es un repositorio. Se activa una vez por clon con `git config core.hooksPath .githooks`.
+- **Secretos:** se revisan solo las líneas agregadas del commit. El hook nunca imprime el contenido: informa el archivo y la cantidad de coincidencias.
+  - Patrones (`.githooks/secret-patterns`): marcador S3, llaves privadas, llaves AWS, tokens de GitHub y Slack, JWT completos y asignaciones literales de 16 o más caracteres a nombres sensibles.
+  - `.env` y `.env.*` bloqueados, salvo `.env.example`.
+- **Excepción acotada:** `secret-allowlist` solo permite que la documentación (`docs/`, `README.md`) nombre el marcador ficticio. Esos archivos se siguen revisando contra todos los demás patrones.
+- **Pruebas:** corren en los contenedores Docker contra el árbol de trabajo. Si el commit solo toca documentación, se omiten; `HOOK_FULL=1` las fuerza.
+  - Backend: suite completa con MySQL real.
+  - Frontend: lint, Vitest y build, que incluye el typecheck.
+- **Ejecución en serie:** correr la suite backend y las pruebas frontend en paralelo agotó la memoria de Docker Desktop (WSL), así que el hook de cada repositorio corre sus pasos en serie.
+
 ## DECISIÓN — 2026-10-01 · Operación profesional y administrativa (Fase 6)
 
 - **Agenda:** la vista `WEEK` va de lunes a domingo de la fecha dada. Del paciente solo se expone el nombre (RF-16); nunca el documento, el correo ni el teléfono.

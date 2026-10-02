@@ -20,8 +20,14 @@ Cada módulo de `citas-api` sigue `domain` → `application` (`port/in`, `port/o
 - Los casos de uso se ensamblan como beans en `<módulo>/config`. Las transacciones entran por el puerto `TransactionPort`, implementado con `TransactionTemplate`.
 - La persistencia de identidad usa Spring Data JPA (`RESTRICCIONES_TECNICAS`).
 - `shared/security` (cadena de filtros, CORS, JWT Bearer) y `shared/web` (Problem Details) son transversales.
-- `identity`, `catalog` y `offer` (especialidades y profesionales) ya cumplen esta estructura. `offer` escribe con Spring Data JPA y lee su vista de profesionales con un modelo de lectura SQL (`ProfessionalReadModel`).
-- `/api/v1/admin/**` exige ADMIN y `/api/v1/professional/**` exige PROFESSIONAL en `SecurityConfig`, además de las validaciones de cada caso de uso. `scheduling` y la extensión de identidad (perfil y EPS) todavía consultan con `JdbcTemplate` desde controladores; esta deuda se paga en las fases que los completan (HU-008 a HU-032).
+- Todos los módulos cumplen esta estructura: `identity`, `catalog`, `offer`, `insurance` y `scheduling`.
+  - Escriben con Spring Data JPA.
+  - Los modelos de lectura SQL (`ProfessionalReadModel`, `AppointmentReadModel`, `OperationsReadModel`) son adaptadores de salida.
+  - Ningún controlador contiene SQL (desde la Fase 6).
+- `/api/v1/admin/**` exige ADMIN y `/api/v1/professional/**` exige PROFESSIONAL en `SecurityConfig`. Cada caso de uso agrega sus propias validaciones.
+- **Red de verificación local (S3 · V8):** `.githooks/pre-commit` en cada repositorio, activado con `git config core.hooksPath .githooks`.
+  - **Siempre:** bloquea archivos `.env` y patrones de secretos en las líneas agregadas.
+  - **Si el commit toca código, o con `HOOK_FULL=1`:** ejecuta en Docker la suite backend (MySQL real) o, en el frontend, lint, Vitest y build.
 
 ## DECISIÓN — 2026-09-24 · Entorno de frontend
 
