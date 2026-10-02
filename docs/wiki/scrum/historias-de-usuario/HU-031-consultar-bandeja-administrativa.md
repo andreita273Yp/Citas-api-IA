@@ -2,7 +2,7 @@
 id: HU-031
 tipo: historia-de-usuario
 titulo: "Consultar bandeja administrativa"
-estado: En desarrollo
+estado: Completada
 epica: "[[EP-007-operacion-profesional-y-administrativa]]"
 esfuerzo: Medio
 sprint_sugerido: "Incremento 6"
@@ -29,9 +29,9 @@ Filtros requeridos: sede, profesional, especialidad y fecha.
 ## Esfuerzo
 **Nivel:** Medio. **Justificación de dificultad:** combina dos tipos de pendientes, filtros y autorización.
 ## Tareas de desarrollo
-- [ ] **T-01 — Definir consulta de bandeja.** Dificultad: Medio. Acordar representación y filtros.
-- [ ] **T-02 — Aplicar selección de pendientes.** Dificultad: Medio. Obtener solo estados/roles requeridos.
-- [ ] **T-03 — Entregar UI/pruebas.** Dificultad: Medio. Probar filtros y restricción ADMIN.
+- [x] **T-01 — Definir consulta de bandeja.** Dificultad: Medio. Acordar representación y filtros.
+- [x] **T-02 — Aplicar selección de pendientes.** Dificultad: Medio. Obtener solo estados/roles requeridos.
+- [x] **T-03 — Entregar UI/pruebas.** Dificultad: Medio. Probar filtros y restricción ADMIN.
 ## Criterios de aceptación
 ### CA-01 — Pendientes correctos
 **Dado** solicitudes existentes, **cuando** ADMIN abre la bandeja, **entonces** ve especializadas `REQUESTED` y reprogramaciones `PENDING`.
@@ -40,15 +40,16 @@ Filtros requeridos: sede, profesional, especialidad y fecha.
 ### CA-03 — Acceso restringido
 **Dado** un USER o PROFESSIONAL, **cuando** intenta abrir la bandeja, **entonces** se deniega.
 ## Definition of Done
-- [ ] CA-01 a CA-03 probados en REST, rol y cliente aplicable.
-- [ ] Contrato no expone información no necesaria; trazabilidad actualizada.
+- [x] CA-01 a CA-03 probados en REST, rol y cliente aplicable.
+- [x] Contrato no expone información no necesaria; trazabilidad actualizada.
 ## Evidencia de validación
 | Elemento | Resultado | Evidencia | Observación |
 |---|---|---|---|
-| CA-01 | Pendiente | — | — |
-| CA-02 | Pendiente | — | — |
-| CA-03 / DoD | Pendiente | — | — |
+| CA-01 | Cumple | `OperationsIntegrationTest`.hu031_ca01_ca02_inboxListsPendingSpecializedRequestsAndReschedulesWithFilters | Une especializadas `REQUESTED` y reprogramaciones `PENDING`; la reprogramación muestra franja actual y nueva. |
+| CA-02 | Cumple | Misma prueba | Filtros por sede, profesional, especialidad y fecha (de la franja a decidir). |
+| CA-03 / DoD | Cumple | `OperationsIntegrationTest`.hu031_ca03_onlyAdminOpensTheInbox | USER y PROFESSIONAL → 403; sin sesión → 401. `citas-web` `OperationsPanel` (filtros y decisión por tipo), `operations-panel.spec.ts`. |
 ## Historial de validación
 - 2026-09-17 — HU creada en estado `Pendiente de aprobación`.
+- 2026-10-01 — RED 2026-10-01: 5 de 8 pruebas fallaron antes de implementar (agenda sin sede ni duración, sin vista día/semana, cierre sin estado en la respuesta, bandeja con ids como texto, historial sin garantía de solo-inserción); GREEN tras mover operaciones a `scheduling` hexagonal (`OperationsService`). Estado `Completada`.
 ## Notas y decisiones
 - La UI de decisión corresponde a sus HU relacionadas.

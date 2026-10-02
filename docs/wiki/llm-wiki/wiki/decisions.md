@@ -32,6 +32,16 @@ Sustituye, donde contradiga, a la decisión del 2026-09-24.
 - `change_source` admite solo `SYSTEM`, `USER` y `ADMIN` (RF-19). El cierre de atención de un PROFESSIONAL se registra como `USER`, con el actor en `changed_by_user_id`.
 - Las pruebas de integración usan MySQL real en `<DB_NAME>_test` (creada por `database/init/01-test-database.sh`), recreada con Flyway clean+migrate en cada ejecución, en lugar de H2.
 
+## DECISIÓN — 2026-10-01 · Operación profesional y administrativa (Fase 6)
+
+- **Agenda:** la vista `WEEK` va de lunes a domingo de la fecha dada. Del paciente solo se expone el nombre (RF-16); nunca el documento, el correo ni el teléfono.
+- **Cierre:** solo después de `scheduled_end_at` según el reloj de negocio. Al cerrar, una reprogramación pendiente pierde sentido: se cancela y se libera su franja retenida.
+- **Bandeja:** los filtros de sede y fecha de una reprogramación se aplican a la franja solicitada, porque es la que ADMIN debe decidir. La franja vigente se muestra aparte (`currentStartsAt`).
+- **Inmutabilidad del historial (RN-12):** se garantiza en la aplicación. El adaptador solo inserta, no hay endpoints de escritura, y una prueba (`hu032_ca02_productionCodeOnlyAppendsToTheHistory`) falla si el código de producción hace UPDATE o DELETE sobre la tabla o la mapea como entidad JPA.
+- **Trigger descartado:** se evaluó un trigger MySQL que rechazara UPDATE y DELETE. Con binlog activo, crearlo exige `SUPER` o `log_bin_trust_function_creators=1`, así que la migración haría fallar el arranque en un MySQL estándar.
+- **Estado anterior:** se deriva de la entrada previa del historial, porque el modelo V6 no tiene esa columna.
+- `OperationsController` se reemplazó por `adapter/in/web/OperationsController` sobre `OperationsService`. Ya ningún controlador contiene SQL.
+
 ## DECISIÓN — 2026-10-01 · Ciclo de vida de la cita (Fase 5)
 
 - **Cancelar** aplica a citas propias `REQUESTED` o `APPROVED` cuyo inicio es futuro. Libera todos los slots de la cita, incluida una franja retenida por reprogramación, y marca esa solicitud como `CANCELLED`.

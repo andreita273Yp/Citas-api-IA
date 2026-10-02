@@ -162,3 +162,49 @@ Las 3 pruebas que pasaban ya en RED (detalle ajeno, cancelación básica y restr
 Tests run: 11,  Failures: 0 -- AppointmentLifecycleIntegrationTest
 Tests run: 100, Failures: 0, Errors: 0
 ```
+## 2026-10-01 · Paso 6 (Fase 6 · HU-029 a HU-032)
+
+**Comando:**
+
+```
+docker compose exec -T citas-api-dev mvn -B test -Dtest=OperationsIntegrationTest
+```
+
+**RED (8 pruebas, 5 fallos):**
+
+```
+hu029_ca01_ca03_…:90 No value at JSON path "$[0].locationCode"
+hu029_ca02_dayWeekAndLocationFilters:107 JSON path "$.length()" expected:<1> but was:<4>
+hu030_ca01_ca03_…:122 No value at JSON path "$.status"
+hu031_ca01_ca02_…:163 JSON path "$[?(@.kind == 'SPECIALIZED_REQUEST')].appointmentId" expected:<1> but was:<1>   (texto "1" frente a número 1)
+hu032_ca02_historyCannotBeModifiedThroughTheApiOrTheDatabase:209 Expecting code to raise a throwable.
+```
+
+**Causas funcionales:**
+
+- La agenda no traía código de sede, duración ni si la cita ya se podía cerrar.
+- No existía la vista por día o semana: se ignoraba `date`/`view` y llegaban las 4 citas.
+- El cierre respondía sin cuerpo.
+- La bandeja serializaba los ids como texto.
+- Nada impedía modificar el historial.
+
+Las 3 pruebas que pasaban en RED cubren reglas que ya existían: restricciones de cierre, acceso solo ADMIN a la bandeja y lectura del historial por ownership.
+
+**Ajuste durante el GREEN:** la versión inicial de HU-032 CA-02 exigía un trigger MySQL. La migración falló con `1419 You do not have the SUPER privilege and binary logging is enabled`, así que se descartó (ver `decisions.md`). La prueba se reemplazó por dos verificaciones portables:
+
+- No existen endpoints de escritura (405), y un cambio de estado agrega entradas sin alterar las anteriores.
+- Un escaneo del código de producción falla ante cualquier UPDATE o DELETE sobre `appointment_status_history`.
+
+**GREEN:**
+
+```
+Tests run: 9, Failures: 0 -- OperationsIntegrationTest
+Tests run: 8, Failures: 0 -- domain.SchedulingDomainTest   (nuevo: agendaWindowCoversADayOrAMondayToSundayWeek)
+Tests run: 110, Failures: 0, Errors: 0   (suite completa)
+```
+
+Se ajustó `AppointmentLifecycleIntegrationTest.hu027_…`, que esperaba `requestId` como texto: el contrato de la bandeja ahora usa ids numéricos.
+
+**Frontend (Vitest):** `operations-panel.spec.ts` y `status-history.spec.ts`. Resultado: 34/34, con lint y build verdes.
+
+**Smoke REST contra la app real:** 104/104 (16 verificaciones nuevas de la Fase 6).

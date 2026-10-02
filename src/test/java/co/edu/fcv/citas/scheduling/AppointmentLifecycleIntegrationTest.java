@@ -147,7 +147,7 @@ class AppointmentLifecycleIntegrationTest {
         mvc.perform(get("/api/v1/availability?specialtyId=" + neurology + "&date=" + day.plusDays(1)).header("Authorization", beto.bearer()))
                 .andExpect(jsonPath("$[?(@.startAt =~ /.*T08:.*/)]").isEmpty());
         mvc.perform(get("/api/v1/admin/inbox").header("Authorization", admin.bearer()))
-                .andExpect(jsonPath("$[?(@.kind == 'RESCHEDULE')].requestId").value(Long.toString(request)));
+                .andExpect(jsonPath("$[?(@.kind == 'RESCHEDULE')].requestId").value((int) request));
     }
 
     @Test

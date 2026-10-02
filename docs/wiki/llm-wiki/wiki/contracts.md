@@ -83,6 +83,26 @@ Sustituye las rutas homónimas del ajuste V6. Los ids ahora son numéricos, no t
 | `POST /api/v1/appointments/{id}/reschedule-requests/{requestId}/keep` | dueño | — | `204`; tras un rechazo registra `KEEP_APPOINTMENT`. Si no está rechazada o ya eligió → `409`. Cancelar tras un rechazo registra `CANCEL_APPOINTMENT` |
 | `POST /api/v1/admin/reschedule-requests/{id}/decision` | ADMIN | `decision` = `APPROVE` \| `REJECT`, `reason` (obligatorio en `REJECT`) | `200` con la solicitud. Aprobar mueve la cita y libera la franja anterior; rechazar libera la nueva. Ya decidida → `409`; inexistente → `404` |
 
+## Agenda profesional, cierre, bandeja e historial (HU-029 a HU-032)
+
+### DECISIÓN — 2026-10-01
+
+Sustituye las rutas homónimas del ajuste V6. Los ids ahora son numéricos, no texto.
+
+| Operación | Rol | Entrada | Éxito / errores |
+|---|---|---|---|
+| `GET /api/v1/professional/appointments` | PROFESSIONAL activo (propias) | `date` + `view` = `DAY` \| `WEEK` (lunes a domingo; `DAY` por defecto), o `from?`/`to?`; `locationId?` | `200`; solo citas `APPROVED`. Cada una incluye `id`, `locationId`, `locationCode`, `location`, `patient` (solo el nombre), `specialty`, `durationMinutes`, `startsAt`, `endsAt`, `reason` y `closable` (la cita ya terminó). Vista desconocida o rango invertido → `400`; otro rol → `403` |
+| `POST /api/v1/professional/appointments/{id}/closure` | PROFESSIONAL asignado | `status` = `COMPLETED` \| `NO_SHOW`, `reason?` | `200` `{id, status}`. Historial con fuente `USER` y actor el profesional. Si había una reprogramación pendiente, se cancela y se libera su franja. Otro estado → `400`; ajena → `404`; no `APPROVED` o aún no termina → `409` |
+| `GET /api/v1/admin/inbox` | ADMIN | `locationId?`, `professionalId?`, `specialtyId?`, `date?` | `200`; une solicitudes `SPECIALIZED_REQUEST` (cita `REQUESTED`) y `RESCHEDULE` (`PENDING`), ordenadas por franja. Cada una trae `kind`, `requestId`, `appointmentId`, `locationId`, `locationCode`, `patient`, `professional`, `specialty`, `startsAt`/`endsAt` (franja a decidir), `currentStartsAt` (franja vigente, solo en reprogramación) y `reason`. Los filtros de sede y fecha aplican a la franja a decidir |
+| `GET /api/v1/appointments/{id}/history` | ADMIN; PROFESSIONAL asignado; USER dueño | — | `200`, lista cronológica de `{id, previousStatus, newStatus, actorId, source, reason, occurredAt}`. Ajena o inexistente → `404`. No existen PUT, PATCH ni DELETE (`405`) |
+
+### Impacto cross-repo
+
+`citas-web`:
+- `OperationsApi` tipa los ids como `number` y agrega filtros e `history()`.
+- `OperationsPanel` usa los filtros de agenda y bandeja, y muestra el cierre solo si `closable`.
+- `StatusHistory` muestra el historial en agenda, bandeja y Mis citas.
+
 ## Identidad ampliada y aseguramiento (HU-008 a HU-013)
 
 ### DECISIÓN — 2026-10-01

@@ -80,4 +80,15 @@ class SchedulingDomainTest {
         assertThatThrownBy(() -> new BookingSlot(DAY.atTime(9, 10), 30)).isInstanceOf(SchedulingException.InvalidData.class);
         assertThatThrownBy(() -> sixty.requireFuture(DAY.atTime(9, 0))).isInstanceOf(SchedulingException.InvalidData.class);
     }
+
+    @Test
+    void agendaWindowCoversADayOrAMondayToSundayWeek() {
+        LocalDate wednesday = LocalDate.of(2026, 10, 7);
+        assertThat(AgendaWindow.of(wednesday, AgendaWindow.View.DAY)).isEqualTo(new AgendaWindow(wednesday, wednesday));
+        AgendaWindow week = AgendaWindow.of(wednesday, AgendaWindow.View.WEEK);
+        assertThat(week.from()).isEqualTo(LocalDate.of(2026, 10, 5));
+        assertThat(week.endExclusive()).isEqualTo(LocalDateTime.of(2026, 10, 12, 0, 0));
+        assertThat(new AgendaWindow(null, null).startInclusive()).isNull();
+        assertThatThrownBy(() -> new AgendaWindow(wednesday, wednesday.minusDays(1))).isInstanceOf(SchedulingException.InvalidData.class);
+    }
 }
