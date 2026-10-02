@@ -51,16 +51,18 @@ La sesión emite access token de corta duración y refresh token separado; roles
 ## Evidencia de validación
 | Elemento | Resultado | Evidencia | Observación |
 |---|---|---|---|
-| CA-01 | Cumple | `AuthIntegrationTest.loginRefreshLogoutAndRoles`, `JwtTokens.access`, `JwtTokens.refresh` | JSON access, cookie refresh y claim USER. |
-| CA-02 | Cumple | `AuthIntegrationTest.invalidCredentialsTokensAndOrigin`, `AuthService.login`, `ApiErrors` | Email desconocido y contraseña incorrecta devuelven el mismo 401. |
-| CA-03 | Cumple | `SecurityConfig`, `AuthIntegrationTest.loginRefreshLogoutAndRoles` | Bearer USER habilita la ruta de prueba USER y recibe 403 en ADMIN; sin token 401. |
-| CA-04 | Cumple | `AuthController.login`, `AuthIntegrationTest.loginRefreshLogoutAndRoles` | Cookie HttpOnly/Secure/SameSite=None y access de 900 s. |
-| DoD pruebas | Cumple | `target/surefire-reports/*.txt` | `mvn test`: 8 pruebas, 0 fallos/errores. |
-| DoD tokens/config/logs | Cumple | `JwtTokens`, `application.yml`, `AuthController`, `AuthRequestGuard` | Secretos/duración por entorno, tipos separados y sin logger de tokens. |
-| DoD documentación | Cumple | `contracts.md`, esta HU, HU-033, `traceability.md` | Contrato cross-repo registrado; UI diferida. |
+| CA-01 | Cumple | `LoginIntegrationTest.ca01_ca04_issuesSeparateAccessInJsonAndRefreshInHttpOnlyCookieWithRoles`; `JwtTokenService.issue` | Access en JSON con `typ=access` y `roles`; refresh distinto solo en cookie. |
+| CA-02 | Cumple | `LoginIntegrationTest.ca02_ca04_unknownEmailAndWrongPasswordGetTheSameErrorWithoutTokens`, `ca02_inactiveAccountCannotSignIn` | Mismo 401 y cuerpo, sin cookie; cuenta inactiva rechazada. |
+| CA-03 | Cumple | `LoginIntegrationTest.ca03_authorizationUsesTheRoleInTheSessionContext`, `ca03_tamperedOrRefreshTokenIsNotAcceptedAsAccess` | Sin token 401, USER 403 en ADMIN, ADMIN 200; payload alterado a ADMIN o refresh usado como access → 401. |
+| CA-04 | Cumple | `AuthController.login`; prueba CA-01 | Cookie `HttpOnly`, `Path=/api/v1/auth`, `SameSite=Lax` en local (`None; Secure` con `COOKIE_SECURE=true`); access de 900 s. |
+| DoD pruebas | Cumple | `LoginIntegrationTest` (5), `AuthRequestGuardIntegrationTest` (5), `auth.interceptor.spec.ts` (6) | Backend en MySQL real; cliente Angular 11/11. |
+| DoD tokens/config/logs | Cumple | `JwtTokenService` (rechaza secretos iguales o < 32 bytes), `application.yml`, `AuthRequestGuard` | Secretos y duraciones por entorno; no hay logger de tokens. |
+| DoD documentación | Cumple | `contracts.md`, esta HU, `traceability.md` | La UI envía credenciales y mantiene el access solamente en memoria. |
 ## Historial de validación
 - 2026-09-17 — HU creada en estado `Pendiente de aprobación`.
 - 2026-09-17 — Corte backend aprobado, validado y completado con `mvn test` (8/8); tareas de UI movidas a HU-033.
+- 2026-09-24 — Fase 1 conectó inicio de sesión Angular al contrato real y eliminó el selector simulado de roles. Estado `Completada`.
+- 2026-10-01 — Revalidación con pruebas reescritas. RED real en `ca01_ca04_…` (login con email con espacios → 400); corregido normalizando en el dominio. Se mantiene `Completada`.
 ## Notas y decisiones
 - La ubicación/gestión concreta de tokens debe respetar el contrato de seguridad aprobado.
 - 2026-09-17: usuario aprobó el corte backend y cookie cross-site. Estado visual y almacenamiento de access por el cliente pasan a HU-033; no se implementa UI aquí.

@@ -1,0 +1,33 @@
+spring:
+  application.name: citas-api
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
+  datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3307}/${DB_NAME:citas}?createDatabaseIfNotExist=true&serverTimezone=America/Bogota
+    username: ${DB_USER:citas_app}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate.ddl-auto: none
+    open-in-view: false
+  flyway:
+    enabled: true
+    # db/seed contiene datos sintéticos de demostración; quitarlo con FLYWAY_LOCATIONS fuera de local.
+    locations: ${FLYWAY_LOCATIONS:classpath:db/migration,classpath:db/seed}
+server.error.include-message: never
+# Solo el estado de salud es público; ningún otro endpoint de actuator se expone.
+management:
+  endpoints.web.exposure.include: health
+  endpoint.health.show-details: never
+app:
+  profile: ${APP_PROFILE:local}
+  jwt:
+    access-secret: ${JWT_ACCESS_SECRET}
+    refresh-secret: ${JWT_REFRESH_SECRET}
+    access-ttl: PT15M
+    refresh-ttl: P7D
+  cors:
+    allowed-origin: ${FRONTEND_ORIGIN:http://localhost:4200}
+  cookie.secure: ${COOKIE_SECURE:false}
+  # Buzón local de recuperación de contraseña (desarrollo, sin SMTP). Desactivar fuera de local.
+  recovery.local-mailbox: ${RECOVERY_LOCAL_MAILBOX:true}

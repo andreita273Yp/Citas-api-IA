@@ -2,7 +2,7 @@
 id: HU-011
 tipo: historia-de-usuario
 titulo: "Gestionar afiliación"
-estado: Pendiente de aprobación
+estado: Completada
 epica: "[[EP-002-identidad-y-perfil-del-usuario]]"
 esfuerzo: Medio
 sprint_sugerido: "Incremento 2"
@@ -29,9 +29,9 @@ EPS y planes son configurables; régimen es catálogo fijo.
 ## Esfuerzo
 **Nivel:** Medio. **Justificación de dificultad:** enlaza catálogos configurables/fijos, integridad y ownership.
 ## Tareas de desarrollo
-- [ ] **T-01 — Definir representación de afiliación.** Dificultad: Medio. Usar FKs/relaciones normalizadas.
-- [ ] **T-02 — Validar consistencia EPS-plan-régimen.** Dificultad: Alto. Impedir combinaciones inválidas o repetidas.
-- [ ] **T-03 — Entregar flujo propio y pruebas.** Dificultad: Medio. Aplicar ownership y mostrar catálogos activos.
+- [x] **T-01 — Definir representación de afiliación.** Dificultad: Medio. Usar FKs/relaciones normalizadas.
+- [x] **T-02 — Validar consistencia EPS-plan-régimen.** Dificultad: Alto. Impedir combinaciones inválidas o repetidas.
+- [x] **T-03 — Entregar flujo propio y pruebas.** Dificultad: Medio. Aplicar ownership y mostrar catálogos activos.
 ## Criterios de aceptación
 ### CA-01 — Asociación válida
 **Dado** catálogos activos y una combinación válida, **cuando** USER guarda afiliación, **entonces** queda asociada a su perfil.
@@ -40,16 +40,18 @@ EPS y planes son configurables; régimen es catálogo fijo.
 ### CA-03 — Aislamiento por usuario
 **Dado** un USER autenticado, **cuando** consulta o modifica afiliación, **entonces** solo opera sobre su propia afiliación.
 ## Definition of Done
-- [ ] CA-01 a CA-03 probados en dominio/REST y cliente aplicable.
-- [ ] Persistencia 3FN y migración aplicable verificadas; no hay textos de catálogo duplicados.
-- [ ] Trazabilidad Scrum actualizada.
+- [x] CA-01 a CA-03 probados en dominio/REST y cliente aplicable.
+- [x] Persistencia 3FN y migración aplicable verificadas; no hay textos de catálogo duplicados.
+- [x] Trazabilidad Scrum actualizada.
 ## Evidencia de validación
 | Elemento | Resultado | Evidencia | Observación |
 |---|---|---|---|
-| CA-01 | Pendiente | — | — |
-| CA-02 | Pendiente | — | — |
-| CA-03 / DoD | Pendiente | — | — |
+| CA-01 | Cumple | `ProfileAndAffiliationIntegrationTest.hu011_ca01_userAssociatesAValidPlanAndGetsEpsAndRegimeFromIt`, `registrationAcceptsAnOptionalActivePlan` | La afiliación referencia solo el plan; EPS y régimen se derivan de él. Sin afiliación → `204`. |
+| CA-02 | Cumple | `hu011_ca02_repeatingThePlanDoesNotDuplicateAndChangingItKeepsASingleCurrentAffiliation`, `hu011_inactivePlansOrPlansOfInactiveEpsCannotBeSelected` | Repetir el plan no crea filas; cambiarlo deja una sola vigente; retirar la termina. Plan inactivo, de EPS inactiva o sin número → `400`. |
+| CA-03 / DoD | Cumple | `hu011_ca03_eachUserOperatesOnlyOnOwnAffiliation` | Cada USER opera solo sobre su afiliación. `citas-web` `IdentityDashboard` ya no pide el régimen aparte (antes lo duplicaba). |
 ## Historial de validación
 - 2026-09-17 — HU creada en estado `Pendiente de aprobación`.
+- 2026-09-29 — Afiliación inicial opcional por FK a plan activo y actualización propia implementadas. No se almacenan nombres de EPS/plan en `users`.
+- 2026-10-01 — Revalidación 2026-10-01: el historial anterior afirmaba la implementación, pero el endpoint de recuperación respondía 202 sin generar token y la prueba citada fallaba. RED: 14 de 18 pruebas nuevas fallaron (incluido teléfono "abc" aceptado); GREEN tras el módulo `insurance` y la recuperación hexagonal. Estado `Completada`.
 ## Notas y decisiones
 - La regla de vigencia de una EPS/plan se abordará con sus HU administrativas.

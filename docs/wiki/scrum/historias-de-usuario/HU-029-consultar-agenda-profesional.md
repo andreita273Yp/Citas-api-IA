@@ -2,7 +2,7 @@
 id: HU-029
 tipo: historia-de-usuario
 titulo: "Consultar agenda profesional"
-estado: Pendiente de aprobación
+estado: Completada
 epica: "[[EP-007-operacion-profesional-y-administrativa]]"
 esfuerzo: Medio
 sprint_sugerido: "Incremento 6"
@@ -29,9 +29,9 @@ Es distinta del calendario de bloques de disponibilidad.
 ## Esfuerzo
 **Nivel:** Medio. **Justificación de dificultad:** aplica filtros temporales, rol y restricción de PII.
 ## Tareas de desarrollo
-- [ ] **T-01 — Definir representación mínima.** Dificultad: Medio. Acordar campos necesarios para atención.
-- [ ] **T-02 — Aplicar consulta por ownership.** Dificultad: Medio. Filtrar estado, periodo y sede.
-- [ ] **T-03 — Entregar agenda/pruebas.** Dificultad: Medio. Probar aislamiento y filtros.
+- [x] **T-01 — Definir representación mínima.** Dificultad: Medio. Acordar campos necesarios para atención.
+- [x] **T-02 — Aplicar consulta por ownership.** Dificultad: Medio. Filtrar estado, periodo y sede.
+- [x] **T-03 — Entregar agenda/pruebas.** Dificultad: Medio. Probar aislamiento y filtros.
 ## Criterios de aceptación
 ### CA-01 — Agenda aprobada propia
 **Dado** citas aprobadas asignadas, **cuando** PROFESSIONAL consulta, **entonces** ve solo las propias en estado `APPROVED`.
@@ -40,15 +40,16 @@ Es distinta del calendario de bloques de disponibilidad.
 ### CA-03 — Privacidad
 **Dado** otro profesional o cita ajena, **cuando** se consulta, **entonces** sus datos no se exponen.
 ## Definition of Done
-- [ ] CA-01 a CA-03 probados con rol/ownership, REST y cliente aplicable.
-- [ ] Campos mínimos y trazabilidad Scrum verificados.
+- [x] CA-01 a CA-03 probados con rol/ownership, REST y cliente aplicable.
+- [x] Campos mínimos y trazabilidad Scrum verificados.
 ## Evidencia de validación
 | Elemento | Resultado | Evidencia | Observación |
 |---|---|---|---|
-| CA-01 | Pendiente | — | — |
-| CA-02 | Pendiente | — | — |
-| CA-03 / DoD | Pendiente | — | — |
+| CA-01 | Cumple | `OperationsIntegrationTest`.hu029_ca01_ca03_professionalSeesOnlyOwnApprovedAppointmentsWithMinimalPatientData | Solo `APPROVED` propias; `REQUESTED`, `CANCELLED` y de otro profesional no aparecen. |
+| CA-02 | Cumple | `OperationsIntegrationTest`.hu029_ca02_dayWeekAndLocationFilters; `SchedulingDomainTest`.agendaWindowCoversADayOrAMondayToSundayWeek | `view=DAY` / `WEEK` (lunes a domingo) y `locationId`; vista desconocida o rango invertido → 400. |
+| CA-03 / DoD | Cumple | `OperationsIntegrationTest`.hu029_ca01_ca03_… | Del paciente solo el nombre (sin correo ni documento); USER y ADMIN → 403. `citas-web` `OperationsPanel` (fecha, día/semana, sede), `operations-panel.spec.ts`. |
 ## Historial de validación
 - 2026-09-17 — HU creada en estado `Pendiente de aprobación`.
+- 2026-10-01 — RED 2026-10-01: 5 de 8 pruebas fallaron antes de implementar (agenda sin sede ni duración, sin vista día/semana, cierre sin estado en la respuesta, bandeja con ids como texto, historial sin garantía de solo-inserción); GREEN tras mover operaciones a `scheduling` hexagonal (`OperationsService`). Estado `Completada`.
 ## Notas y decisiones
 - Los campos visibles no amplían el PRD ni contienen historia clínica.

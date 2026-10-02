@@ -2,7 +2,7 @@
 id: HU-021
 tipo: historia-de-usuario
 titulo: "Buscar disponibilidad"
-estado: Pendiente de aprobación
+estado: Completada
 epica: "[[EP-005-busqueda-y-reserva-de-citas]]"
 esfuerzo: Alto
 sprint_sugerido: "Incremento 4"
@@ -29,9 +29,9 @@ Solo se muestran horarios que permiten todos los slots necesarios; tipo general/
 ## Esfuerzo
 **Nivel:** Alto. **Justificación de dificultad:** consulta transversal de agenda, oferta, vigencia y slots consecutivos.
 ## Tareas de desarrollo
-- [ ] **T-01 — Diseñar filtros y contrato.** Dificultad: Medio. Cubrir sede, tipo, especialidad, profesional y fecha.
-- [ ] **T-02 — Calcular opciones reservables.** Dificultad: Alto. Excluir reservas/retenciones y exigir consecutividad 60 min.
-- [ ] **T-03 — Entregar búsqueda y pruebas.** Dificultad: Alto. Probar filtros, 30/60 y oferta inactiva/no asociada.
+- [x] **T-01 — Diseñar filtros y contrato.** Dificultad: Medio. Cubrir sede, tipo, especialidad, profesional y fecha.
+- [x] **T-02 — Calcular opciones reservables.** Dificultad: Alto. Excluir reservas/retenciones y exigir consecutividad 60 min.
+- [x] **T-03 — Entregar búsqueda y pruebas.** Dificultad: Alto. Probar filtros, 30/60 y oferta inactiva/no asociada.
 ## Criterios de aceptación
 ### CA-01 — Filtros completos
 **Dado** disponibilidad publicada, **cuando** USER filtra por cualquiera de los criterios permitidos, **entonces** recibe opciones que satisfacen los filtros combinados.
@@ -40,16 +40,18 @@ Solo se muestran horarios que permiten todos los slots necesarios; tipo general/
 ### CA-03 — Oferta válida
 **Dado** especialidad inactiva/no asociada o profesional no habilitado en sede, **cuando** se busca, **entonces** no aparece como opción reservable.
 ## Definition of Done
-- [ ] CA-01 a CA-03 probados en dominio/aplicación, REST y cliente aplicable.
-- [ ] Consultas/índices de agenda relevantes y contrato cross-repo verificados.
-- [ ] Trazabilidad Scrum actualizada.
+- [x] CA-01 a CA-03 probados en dominio/aplicación, REST y cliente aplicable.
+- [x] Consultas/índices de agenda relevantes y contrato cross-repo verificados.
+- [x] Trazabilidad Scrum actualizada.
 ## Evidencia de validación
 | Elemento | Resultado | Evidencia | Observación |
 |---|---|---|---|
-| CA-01 | Pendiente | — | — |
-| CA-02 | Pendiente | — | — |
-| CA-03 / DoD | Pendiente | — | — |
+| CA-01 | Cumple | `BookingIntegrationTest.hu021_ca01_searchCombinesLocationProfessionalSpecialtyAndDateFilters` | Sede, tipo (`/catalogs/specialties?type`), especialidad, profesional y fecha combinables. |
+| CA-02 | Cumple | `hu021_ca02_sixtyMinuteSpecialtyOnlyOffersStartsWithTwoConsecutiveFreeSlots`; `SchedulingDomainTest.sixtyMinute…` | 60 min solo con 2 slots libres consecutivos del mismo profesional y sede. |
+| CA-03 | Cumple | `hu021_ca03_inactiveOrUnassociatedOfferIsNotReturned`, `hu021_pastSlotsAreNeverOffered` | Especialidad inactiva → 404; no asociada o sede desactivada → sin opciones; nunca inicios pasados. |
+| DoD cliente | Cumple | `citas-web` `BookAppointment`, `book-appointment.spec.ts` | Flujo sede → tipo → especialidad → profesional → fecha → horario. |
 ## Historial de validación
 - 2026-09-17 — HU creada en estado `Pendiente de aprobación`.
+- 2026-10-01 — RED 2026-10-01: 23 de 24 pruebas de la Fase 3 fallaron antes de implementar (endpoints inexistentes, reserva en el pasado aceptada, PROFESSIONAL podía reservar); GREEN tras el módulo `scheduling` hexagonal. Estado `Completada`.
 ## Notas y decisiones
 - El tratamiento de concurrencia se prueba definitivamente en las HU de reserva.

@@ -1,0 +1,27 @@
+spring:
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
+  # Las pruebas usan MySQL real (misma base que producción) en una base aparte <DB_NAME>_test,
+  # recreada desde cero en cada ejecución por TestDatabaseConfig.
+  datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3307}/${DB_NAME:citas}_test?createDatabaseIfNotExist=true&serverTimezone=America/Bogota
+    username: ${DB_USER:citas_app}
+    password: ${DB_PASSWORD:}
+  jpa:
+    hibernate.ddl-auto: none
+    open-in-view: false
+  flyway:
+    locations: classpath:db/migration
+    clean-disabled: false
+app:
+  profile: test
+  cors:
+    allowed-origin: http://localhost:4200
+  jwt:
+    access-secret: test-access-secret-which-is-at-least-thirty-two-bytes
+    refresh-secret: test-refresh-secret-which-is-at-least-thirty-two-bytes
+    access-ttl: PT15M
+    refresh-ttl: P7D
+  cookie.secure: false
+  recovery.local-mailbox: true

@@ -51,16 +51,18 @@ La API permite refresh y revocación/logout.
 ## Evidencia de validación
 | Elemento | Resultado | Evidencia | Observación |
 |---|---|---|---|
-| CA-01 | Cumple | `AuthService.refresh`, `AuthIntegrationTest.loginRefreshLogoutAndRoles` | Nuevo access y nueva cookie refresh. |
-| CA-02 | Cumple | `JwtTokens.readRefresh`, `AuthService.refresh`, `AuthIntegrationTest.invalidCredentialsTokensAndOrigin` | Vencido, falsificado y tipo access rechazados; revocado y reutilizado probados en ciclo. |
-| CA-03 | Cumple | `AuthService.logout`, `AuthController.logout`, `AuthIntegrationTest.loginRefreshLogoutAndRoles` | 204, cookie Max-Age=0 y refresh anterior no reutilizable. |
-| CA-04 | Cumple | `SessionJpaAdapter.lockByJtiHash`, `AuthIntegrationTest.simultaneousRefreshAllowsOnlyOneRotation` | Bajo concurrencia, una renovación 200 y otra 401. |
-| DoD pruebas | Cumple | `target/surefire-reports/*.txt` | `mvn test`: 8 pruebas, 0 fallos/errores. |
-| DoD revocación/logs | Cumple | `V1__identity.sql`, `AuthService`, `SessionJpaAdapter` | Se persiste solo hash de jti, vigencia/revocación; no hay logger de tokens. |
-| DoD trazabilidad | Cumple | Esta HU, HU-033, `contracts.md`, `traceability.md` | Limpieza visual diferida a HU-033. |
+| CA-01 | Cumple | `SessionLifecycleIntegrationTest.ca01_ca04_validRefreshRotatesBothTokensAndTheOldOneCannotBeReused`; `SessionService.refresh` | Nuevo access y nueva cookie refresh. |
+| CA-02 | Cumple | `SessionLifecycleIntegrationTest.ca02_missingForgedExpiredOrAccessTypeTokensAreRejected`, `ca02_refreshWhosePersistedSessionExpiredIsRejected` | Ausente, no-JWT, access usado como refresh, firma ajena, JWT vencido y sesión vencida en BD → 401. |
+| CA-03 | Cumple | `SessionLifecycleIntegrationTest.ca03_logoutRevokesTheSessionAndClearsTheCookie` | 204, `Max-Age=0`, sesión revocada en BD y refresh ya no reutilizable. |
+| CA-04 | Cumple | `RefreshTokenJpaRepository.findByTokenHash` (`PESSIMISTIC_WRITE`); `SessionLifecycleIntegrationTest.ca04_concurrentRefreshWithTheSameTokenAllowsExactlyOneRotation` | 4 renovaciones simultáneas del mismo refresh: exactamente una 200, el resto 401. |
+| DoD pruebas | Cumple | `SessionLifecycleIntegrationTest` (5), `auth-api.spec.ts`, `auth.interceptor.spec.ts` | El cliente renueva una sola vez ante 401 concurrentes y cierra la sesión si el refresh se rechaza. |
+| DoD revocación/logs | Cumple | `refresh_tokens` (V6), `RefreshSessionJpaAdapter` | Solo se persiste el hash SHA-256 del id de sesión; no hay logger de tokens. |
+| DoD trazabilidad | Cumple | Esta HU, `contracts.md`, `traceability.md` | El cliente restaura la sesión al recargar con la cookie refresh. |
 ## Historial de validación
 - 2026-09-17 — HU creada en estado `Pendiente de aprobación`.
 - 2026-09-17 — Corte backend aprobado, validado y completado con `mvn test` (8/8); tareas de UI movidas a HU-033.
+- 2026-09-24 — Fase 1 conectó refresh/logout en el cliente y comprobó lint, Vitest y build en Docker. Estado `Completada`.
+- 2026-10-01 — Revalidación con pruebas reescritas (todas GREEN). Hallazgo: el cliente nunca invocaba refresh, por lo que la sesión se perdía a los 15 min o al recargar; se añadió `authInterceptor` + `SessionRefresher`. Se mantiene `Completada`.
 ## Notas y decisiones
 - No se inventa una política global de revocación fuera del PRD.
 - 2026-09-17: usuario aprobó el corte backend con rotación por uso y logout. La limpieza de estado del cliente pasa a HU-033; la DoD backend se valida por cookie eliminada y revocación persistida.

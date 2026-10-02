@@ -2,7 +2,7 @@
 id: HU-003
 tipo: historia-de-usuario
 titulo: "Publicar catálogos fijos"
-estado: Pendiente de aprobación
+estado: Completada
 epica: "[[EP-001-fundacion-y-contrato-del-producto]]"
 esfuerzo: Medio
 sprint_sugerido: "Incremento 1"
@@ -30,10 +30,10 @@ Roles, estados de cita, estados de reprogramación, regímenes y sedes son de so
 ## Esfuerzo
 **Nivel:** Medio. **Justificación de dificultad:** cruza seed, contrato, seguridad y consistencia de datos.
 ## Tareas de desarrollo
-- [ ] **T-01 — Definir valores autorizados.** Dificultad: Medio. Reflejar los tipos exigidos y las dos sedes sin datos personales.
-- [ ] **T-02 — Cargar catálogos por seed.** Dificultad: Medio. Hacerlo repetible y coherente con Flyway.
-- [ ] **T-03 — Exponer lectura por REST.** Dificultad: Medio. Aplicar autorización aprobada y validaciones.
-- [ ] **T-04 — Probar inmutabilidad funcional.** Dificultad: Bajo. Verificar que no exista operación de modificación por la API.
+- [x] **T-01 — Definir valores autorizados.** Dificultad: Medio. Reflejar los tipos exigidos y las dos sedes sin datos personales.
+- [x] **T-02 — Cargar catálogos por seed.** Dificultad: Medio. Hacerlo repetible y coherente con Flyway.
+- [x] **T-03 — Exponer lectura por REST.** Dificultad: Medio. Aplicar autorización aprobada y validaciones.
+- [x] **T-04 — Probar inmutabilidad funcional.** Dificultad: Bajo. Verificar que no exista operación de modificación por la API.
 ## Criterios de aceptación
 ### CA-01 — Catálogos disponibles
 **Dado** una instalación inicial, **cuando** se consulta cada catálogo fijo, **entonces** roles, estados, regímenes y sedes exigidos están disponibles.
@@ -48,11 +48,13 @@ Roles, estados de cita, estados de reprogramación, regímenes y sedes son de so
 ## Evidencia de validación
 | Elemento | Resultado | Evidencia | Observación |
 |---|---|---|---|
-| CA-01 | Pendiente | — | — |
-| CA-02 | Pendiente | — | — |
-| CA-03 / DoD | Pendiente | — | — |
+| CA-01 | Cumple | `V6__reference_3fn_model.sql`, `CatalogIntegrationTest.publishesFixedCatalogsToAuthenticatedConsumersAsReadOnly` | Roles, estados de cita y reprogramación, regímenes y sedes se crean por Flyway y se leen con JWT. |
+| CA-02 | Cumple | `V6__reference_3fn_model.sql`, `CatalogIntegrationTest.publishesFixedCatalogsToAuthenticatedConsumersAsReadOnly` | HIC e ICV con dirección, ciudad y departamento públicos. |
+| CA-03 / DoD | Cumple | `CatalogController` solo declara GET; POST recibe 405; `rejectsUnauthenticatedCatalogAccess` 401 | No hay rutas de escritura ni secretos. |
 ## Historial de validación
 - 2026-09-17 — HU creada en estado `Pendiente de aprobación`.
+- 2026-09-24 — Validada en Docker con Flyway V2 y `CatalogIntegrationTest`; `mvn test` 7/7. Estado `Completada`.
+- 2026-10-01 — Revalidada con el modelo de referencia (Flyway V6) sobre MySQL real; se mantiene `Completada`.
 ## Notas y decisiones
 - Los valores de estados deberán alinearse con el catálogo fijo aprobado.
 - 2026-09-17: se aprobó únicamente el seed de roles `USER`, `PROFESSIONAL`, `ADMIN` como dependencia de identidad. La publicación REST de roles y los demás catálogos quedan pendientes; HU-003 conserva su estado.

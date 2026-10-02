@@ -2,7 +2,7 @@
 id: HU-018
 tipo: historia-de-usuario
 titulo: "Crear bloques de disponibilidad"
-estado: Pendiente de aprobación
+estado: Completada
 epica: "[[EP-004-disponibilidad-del-profesional]]"
 esfuerzo: Alto
 sprint_sugerido: "Incremento 4"
@@ -29,9 +29,9 @@ Puede crear múltiples bloques (por ejemplo mañana/tarde); cada uno se discreti
 ## Esfuerzo
 **Nivel:** Alto. **Justificación de dificultad:** exige validación temporal, autorización, sede y base para concurrencia de reservas.
 ## Tareas de desarrollo
-- [ ] **T-01 — Modelar bloque y slots.** Dificultad: Alto. Preservar 3FN e índices de agenda.
-- [ ] **T-02 — Validar publicación.** Dificultad: Alto. Aplicar future-only, no solapamiento y sede/estado.
-- [ ] **T-03 — Entregar calendario/formulario y pruebas.** Dificultad: Alto. Cubrir casos válidos e inválidos.
+- [x] **T-01 — Modelar bloque y slots.** Dificultad: Alto. Preservar 3FN e índices de agenda.
+- [x] **T-02 — Validar publicación.** Dificultad: Alto. Aplicar future-only, no solapamiento y sede/estado.
+- [x] **T-03 — Entregar calendario/formulario y pruebas.** Dificultad: Alto. Cubrir casos válidos e inválidos.
 ## Criterios de aceptación
 ### CA-01 — Bloque futuro válido
 **Dado** PROFESSIONAL activo asignado a una sede, **cuando** crea un bloque futuro válido, **entonces** queda disponible en slots de 30 minutos.
@@ -40,16 +40,18 @@ Puede crear múltiples bloques (por ejemplo mañana/tarde); cada uno se discreti
 ### CA-03 — Múltiples franjas
 **Dado** un día sin conflicto, **cuando** crea dos franjas separadas, **entonces** ambas quedan disponibles sin incluir el intervalo intermedio.
 ## Definition of Done
-- [ ] CA-01 a CA-03 tienen pruebas de dominio/aplicación/REST y cliente aplicable.
-- [ ] Migración/índices de agenda aplicables y ownership de PROFESSIONAL verificados.
-- [ ] Trazabilidad Scrum actualizada.
+- [x] CA-01 a CA-03 tienen pruebas de dominio/aplicación/REST y cliente aplicable.
+- [x] Migración/índices de agenda aplicables y ownership de PROFESSIONAL verificados.
+- [x] Trazabilidad Scrum actualizada.
 ## Evidencia de validación
 | Elemento | Resultado | Evidencia | Observación |
 |---|---|---|---|
-| CA-01 | Pendiente | — | — |
-| CA-02 | Pendiente | — | — |
-| CA-03 / DoD | Pendiente | — | — |
+| CA-01 | Cumple | `AgendaBlocksIntegrationTest.hu018_ca01_futureBlockInAnAssignedLocationIsPublishedAs30MinuteSlots`; `BlockSchedule.slots` | 08:00–12:00 en HIC publica 8 slots de 30 min. |
+| CA-02 | Cumple | `hu018_ca02_pastOverlappingMisalignedOrUnassignedBlocksAreRejectedWithoutPublishing` | Pasado, fuera de cuadrícula o fin ≤ inicio → 400; sede no asignada o solape (parcial o contenido) → 409; no se publican slots. |
+| CA-03 | Cumple | `hu018_ca03_twoSeparateBlocksOnTheSameDayDoNotPublishTheGapBetweenThem` | 08–12 y 14–17: 14 horarios y ninguno entre 12:00 y 14:00. |
+| DoD cliente | Cumple | `citas-web` `ProfessionalAgenda`, `booking-api.spec.ts` | Publicar bloque contra REST real. |
 ## Historial de validación
 - 2026-09-17 — HU creada en estado `Pendiente de aprobación`.
+- 2026-10-01 — RED 2026-10-01: 23 de 24 pruebas de la Fase 3 fallaron antes de implementar (endpoints inexistentes, reserva en el pasado aceptada, PROFESSIONAL podía reservar); GREEN tras el módulo `scheduling` hexagonal. Estado `Completada`.
 ## Notas y decisiones
 - La representación interna de slots se decide en [[HU-002-modelar-persistencia-3fn]].

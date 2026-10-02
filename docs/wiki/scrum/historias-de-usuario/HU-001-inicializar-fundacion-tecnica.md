@@ -2,7 +2,7 @@
 id: HU-001
 tipo: historia-de-usuario
 titulo: "Inicializar fundación técnica"
-estado: En desarrollo
+estado: Completada
 epica: "[[EP-001-fundacion-y-contrato-del-producto]]"
 esfuerzo: Alto
 sprint_sugerido: "Incremento 1"
@@ -30,10 +30,10 @@ El repositorio parte sin aplicación. Esta HU funda backend y cliente elegible s
 ## Esfuerzo
 **Nivel:** Alto. **Justificación de dificultad:** establece límites transversales sin implementación existente.
 ## Tareas de desarrollo
-- [ ] **T-01 — Inicializar backend requerido.** Dificultad: Alto. Crear estructura que conserve dominio/aplicación independiente de adaptadores.
-- [ ] **T-02 — Preparar configuración segura.** Dificultad: Medio. Externalizar secretos y habilitar CORS explícito/health recomendado.
-- [ ] **T-03 — Inicializar cliente TypeScript aprobado.** Dificultad: Medio. Configurar URL de API por environment, sin Express/BFF.
-- [ ] **T-04 — Añadir verificación base.** Dificultad: Medio. Registrar build/typecheck y pruebas aplicables sin secretos.
+- [x] **T-01 — Inicializar backend requerido.** Dificultad: Alto. Crear estructura que conserve dominio/aplicación independiente de adaptadores.
+- [x] **T-02 — Preparar configuración segura.** Dificultad: Medio. Externalizar secretos y habilitar CORS explícito/health recomendado.
+- [x] **T-03 — Inicializar cliente TypeScript aprobado.** Dificultad: Medio. Configurar URL de API por environment, sin Express/BFF.
+- [x] **T-04 — Añadir verificación base.** Dificultad: Medio. Registrar build/typecheck y pruebas aplicables sin secretos.
 ## Criterios de aceptación
 ### CA-01 — Stack verificable
 **Dado** el repositorio inicial, **cuando** se inspecciona la configuración, **entonces** se evidencia Java 21, Spring Boot 3.5.x, Maven y cliente TypeScript con framework aprobado.
@@ -42,18 +42,21 @@ El repositorio parte sin aplicación. Esta HU funda backend y cliente elegible s
 ### CA-03 — Configuración segura
 **Dado** una ejecución de desarrollo, **cuando** se revisan configuración y ejemplos, **entonces** no hay secretos reales y la URL backend es configurable.
 ## Definition of Done
-- [ ] CA-01 a CA-03 tienen evidencia de repositorio.
-- [ ] Hay build/typecheck y pruebas base aplicables con resultado disponible.
-- [ ] No se introdujo Express/BFF, credenciales ni datos no sintéticos.
-- [ ] La trazabilidad Scrum está actualizada.
+- [x] CA-01 a CA-03 tienen evidencia de repositorio.
+- [x] Hay build/typecheck y pruebas base aplicables con resultado disponible.
+- [x] No se introdujo Express/BFF, credenciales ni datos no sintéticos.
+- [x] La trazabilidad Scrum está actualizada.
 ## Evidencia de validación
 | Elemento | Resultado | Evidencia | Observación |
 |---|---|---|---|
-| CA-01 | Pendiente | — | — |
-| CA-02 | Pendiente | — | — |
-| CA-03 / DoD | Pendiente | — | — |
+| CA-01 | Cumple | `pom.xml` (Java 21, Spring Boot 3.5.6, Maven); `citas-web/package.json` (Angular 21, TypeScript) | Angular elegido a partir del export de AI Studio. |
+| CA-02 | Cumple | `FoundationIntegrationTest.ca02_domainAndApplicationLayersDoNotDependOnSpringJpaOrHttp`; `identity/{domain,application}`, `catalog/{domain,application}` | Los casos de uso se ensamblan en `*/config`; la prueba falla si dominio/aplicación importan Spring, JPA, Servlet o Hibernate. |
+| CA-03 | Cumple | `application.yml` (secretos solo `${...}`), `.env` ignorado; `citas-web/src/environments/environment.ts` | URL de API configurable por `window.__FCV_CONFIG__`. |
+| T-02 | Cumple | `FoundationIntegrationTest.t02_healthIsPublicAndRevealsNoDetails`, `t02_corsAllowsOnlyTheConfiguredFrontendOrigin` | `/actuator/health` público sin detalles; CORS solo `FRONTEND_ORIGIN`. |
+| DoD pruebas | Cumple | `mvn test` en Docker; `npm run lint`, `ng test` (11/11), `npm run build` | Sin Express/BFF ni datos reales. |
 ## Historial de validación
 - 2026-09-17 — HU creada en estado `Pendiente de aprobación`.
+- 2026-10-01 — Identidad reestructurada en hexagonal (dominio/aplicación sin Spring, adaptadores JPA/JWT/web), health y CORS estricto probados. Estado `Completada`.
 ## Notas y decisiones
-- React o Angular sigue pendiente de selección a partir de Stitch/AI Studio.
+- 2026-09-24: se seleccionó Angular 21 a partir del export de AI Studio.
 - 2026-09-17: aprobado y en desarrollo únicamente el corte backend Java/Spring/Maven, configuración externa, CORS y límites hexagonales. Cliente TypeScript, CA-01 y DoD globales permanecen pendientes; esta HU no se declarará completada con el incremento de identidad.

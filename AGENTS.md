@@ -2,9 +2,9 @@
 
 ## Estado observado del repositorio
 
-Al crear este archivo no existen `pom.xml`, `src/` ni implementación de negocio. Las carpetas `docs/wiki/scrum/epicas/` y `docs/wiki/scrum/historias-de-usuario/` solo contienen archivos de reserva: no hay HU aprobada ni DoD disponible todavía. No asumir una estructura de paquetes o un contrato REST que aún no existe.
+Existe una línea base Spring Boot con `pom.xml`, código de identidad/autenticación y `V1__identity.sql`. Las HU Scrum existen, pero una HU pendiente de aprobación no autoriza implementación funcional. El contrato vigente cubre autenticación; los contratos de citas se aprueban antes de codificarse.
 
-El worktree tiene una eliminación preexistente de `.env.example`; no restaurarla, abrirla ni inferir su contenido sin instrucción expresa.
+Preserva los cambios locales existentes y no abras ni imprimas secretos de `.env`.
 
 ## Fuentes y orden de consulta
 
@@ -26,7 +26,7 @@ No editar `../citas-web`. No acoplar el backend a React o Angular; el único lí
 
 La LLM Wiki es global y la mantiene el agente orquestador. Este agente puede consultarla, pero no crea ni mantiene una wiki propia ni modifica `docs/wiki/llm-wiki/` salvo instrucción explícita del orquestador.
 
-## Arquitectura obligatoria al inicializar el proyecto
+## Arquitectura obligatoria para los cambios posteriores
 
 - El dominio no depende de Spring, JPA, HTTP ni clases de adaptadores.
 - Los casos de uso y la coordinación de reglas viven en aplicación.
@@ -66,6 +66,6 @@ No resolver por inferencia el catálogo final de estados, expiración de retenci
 
 ## Git y verificación
 
-`main` es estable y `develop` es trabajo. El repositorio observado solo tiene `main`; no crear ni alterar ramas sin una tarea que lo autorice. No reescribir historial para ocultar avance.
+`main` es estable y `develop` es trabajo. No reescribir historial para ocultar avance.
 
-Tras inicializar Maven, usar las comprobaciones que el proyecto provea; como mínimo, mantener `mvn test` relevante y no afirmar validación de build, integración o seguridad cuando la herramienta o infraestructura no estén disponibles.
+Usar el contenedor `citas-api-dev` cuando Maven no esté disponible en el host. Mantener `mvn test` relevante y no afirmar validación de build, integración o seguridad sin evidencia reproducible.

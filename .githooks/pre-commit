@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# Pre-commit de citas-api (S3 · V8). Activación, una vez por clon: git config core.hooksPath .githooks
+#   1. Secretos y archivos .env staged (siempre).
+#   2. Suite backend en Docker (citas-api-dev, MySQL real) si el commit toca src/ o pom.xml (o siempre con HOOK_FULL=1).
+set -uo pipefail
+
+repo="$(git rev-parse --show-toplevel)"
+"$repo/.githooks/check-secrets.sh" || exit 1
+
+if [ "${HOOK_FULL:-0}" != 1 ] && ! git diff --cached --name-only | grep -qE '^(src/|pom\.xml$)'; then
+  echo "pre-commit: sin cambios de código backend; se omiten las pruebas"
+  echo "pre-commit: PASS"
+  exit 0
+fi
+
+# Docker Desktop en Windows puede no estar en el PATH de Git Bash.
+if ! command -v docker >/dev/null 2>&1; then
+  for dir in "$(cygpath -u "${LOCALAPPDATA:-}" 2>/dev/null)/Programs/DockerDesktop/resources/bin" "/c/Program Files/Docker/Docker/resources/bin"; do
+    [ -x "$dir/docker.exe" ] && PATH="$dir:$PATH" && break
+  done
+fi
+compose=(docker compose -f "$(dirname "$repo")/docker-compose.yml")
+if ! "${compose[@]}" ps --status running --services 2>/dev/null | grep -qx citas-api-dev; then
+  echo "pre-commit: FAIL — el contenedor citas-api-dev no está corriendo (docker compose up -d desde la raíz)" >&2
+  exit 1
+fi
+
+echo "pre-commit: ejecutando la suite backend (mvn test)…"
+if ! "${compose[@]}" exec -T citas-api-dev mvn -B test > /tmp/citas-api-pre-commit.log 2>&1; then
+  grep -E 'Tests run:|FAIL|ERROR\]' /tmp/citas-api-pre-commit.log | tail -15 >&2
+  echo "pre-commit: FAIL — pruebas backend (detalle en /tmp/citas-api-pre-commit.log)" >&2
+  exit 1
+fi
+grep -E '^\[INFO\] Tests run:|^Tests run:' /tmp/citas-api-pre-commit.log | tail -1
+echo "pre-commit: PASS"

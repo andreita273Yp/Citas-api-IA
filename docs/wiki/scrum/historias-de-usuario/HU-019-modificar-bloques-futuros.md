@@ -2,7 +2,7 @@
 id: HU-019
 tipo: historia-de-usuario
 titulo: "Modificar bloques futuros"
-estado: Pendiente de aprobación
+estado: Completada
 epica: "[[EP-004-disponibilidad-del-profesional]]"
 esfuerzo: Alto
 sprint_sugerido: "Incremento 4"
@@ -29,9 +29,9 @@ El PRD limita la modificación/eliminación a bloques futuros sin citas comprome
 ## Esfuerzo
 **Nivel:** Alto. **Justificación de dificultad:** modifica disponibilidad sin afectar reservas existentes.
 ## Tareas de desarrollo
-- [ ] **T-01 — Detectar compromisos y ownership.** Dificultad: Alto. Consultar reservas/retenciones aplicables.
-- [ ] **T-02 — Aplicar edición/eliminación segura.** Dificultad: Alto. Revalidar futuro, sede y solapamiento.
-- [ ] **T-03 — Actualizar calendario y pruebas.** Dificultad: Medio. Reflejar éxito/rechazo y probar protección.
+- [x] **T-01 — Detectar compromisos y ownership.** Dificultad: Alto. Consultar reservas/retenciones aplicables.
+- [x] **T-02 — Aplicar edición/eliminación segura.** Dificultad: Alto. Revalidar futuro, sede y solapamiento.
+- [x] **T-03 — Actualizar calendario y pruebas.** Dificultad: Medio. Reflejar éxito/rechazo y probar protección.
 ## Criterios de aceptación
 ### CA-01 — Edición permitida
 **Dado** un bloque propio futuro sin citas comprometidas, **cuando** PROFESSIONAL lo edita de forma válida, **entonces** la disponibilidad refleja los nuevos slots.
@@ -40,16 +40,18 @@ El PRD limita la modificación/eliminación a bloques futuros sin citas comprome
 ### CA-03 — Protección de compromisos
 **Dado** un bloque pasado, ajeno o con citas comprometidas, **cuando** se intenta editar/eliminar, **entonces** se rechaza y las citas no cambian.
 ## Definition of Done
-- [ ] CA-01 a CA-03 probados con reglas de agenda y autorización.
-- [ ] Persistencia/índices aplicables, calendario cliente y contrato REST verificados.
-- [ ] Trazabilidad Scrum actualizada.
+- [x] CA-01 a CA-03 probados con reglas de agenda y autorización.
+- [x] Persistencia/índices aplicables, calendario cliente y contrato REST verificados.
+- [x] Trazabilidad Scrum actualizada.
 ## Evidencia de validación
 | Elemento | Resultado | Evidencia | Observación |
 |---|---|---|---|
-| CA-01 | Pendiente | — | — |
-| CA-02 | Pendiente | — | — |
-| CA-03 / DoD | Pendiente | — | — |
+| CA-01 | Cumple | `AgendaBlocksIntegrationTest.hu019_ca01_editingAFutureFreeBlockRecalculatesItsSlots` | 08–10 → 09–12 regenera 6 slots. |
+| CA-02 | Cumple | `hu019_ca02_deletingAFutureFreeBlockStopsOfferingItsSlots` | Bloque y slots eliminados (204). |
+| CA-03 | Cumple | `hu019_ca03_pastForeignOrCommittedBlocksCannotBeChanged` | Bloque ajeno → 404; con cita → 409 y la cita se conserva; bloque pasado → 409. |
+| DoD cliente | Cumple | `citas-web` `ProfessionalAgenda` | Editar/Eliminar deshabilitados si hay franjas comprometidas o ya pasó; el backend lo revalida. |
 ## Historial de validación
 - 2026-09-17 — HU creada en estado `Pendiente de aprobación`.
+- 2026-10-01 — RED 2026-10-01: 23 de 24 pruebas de la Fase 3 fallaron antes de implementar (endpoints inexistentes, reserva en el pasado aceptada, PROFESSIONAL podía reservar); GREEN tras el módulo `scheduling` hexagonal. Estado `Completada`.
 ## Notas y decisiones
 - “Cita comprometida” se verificará contra estados/retenciones aprobados.

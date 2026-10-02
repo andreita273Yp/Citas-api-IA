@@ -2,7 +2,7 @@
 id: HU-025
 tipo: historia-de-usuario
 titulo: "Consultar mis citas"
-estado: Pendiente de aprobación
+estado: Completada
 epica: "[[EP-006-ciclo-de-vida-de-citas-y-reprogramaciones]]"
 esfuerzo: Medio
 sprint_sugerido: "Incremento 5"
@@ -29,9 +29,9 @@ Debe mostrar sede, profesional, especialidad, fecha/hora, duración, estado y mo
 ## Esfuerzo
 **Nivel:** Medio. **Justificación de dificultad:** combina filtros, ownership y representación de estados/auditoría.
 ## Tareas de desarrollo
-- [ ] **T-01 — Definir consulta/detalle.** Dificultad: Medio. Acordar filtros y campos obligatorios.
-- [ ] **T-02 — Aplicar ownership y composición.** Dificultad: Medio. Obtener relaciones sin exponer citas ajenas.
-- [ ] **T-03 — Entregar pantalla/pruebas.** Dificultad: Medio. Cubrir filtros, rechazo y aislamiento.
+- [x] **T-01 — Definir consulta/detalle.** Dificultad: Medio. Acordar filtros y campos obligatorios.
+- [x] **T-02 — Aplicar ownership y composición.** Dificultad: Medio. Obtener relaciones sin exponer citas ajenas.
+- [x] **T-03 — Entregar pantalla/pruebas.** Dificultad: Medio. Cubrir filtros, rechazo y aislamiento.
 ## Criterios de aceptación
 ### CA-01 — Datos mínimos
 **Dado** citas propias, **cuando** USER las consulta, **entonces** ve sede, profesional, especialidad, fecha/hora, duración y estado.
@@ -40,15 +40,16 @@ Debe mostrar sede, profesional, especialidad, fecha/hora, duración, estado y mo
 ### CA-03 — Ownership
 **Dado** un USER, **cuando** intenta consultar detalle de cita ajena, **entonces** no recibe sus datos.
 ## Definition of Done
-- [ ] CA-01 a CA-03 probados en REST/ownership y cliente aplicable.
-- [ ] Contrato no expone información fuera del PRD; trazabilidad actualizada.
+- [x] CA-01 a CA-03 probados en REST/ownership y cliente aplicable.
+- [x] Contrato no expone información fuera del PRD; trazabilidad actualizada.
 ## Evidencia de validación
 | Elemento | Resultado | Evidencia | Observación |
 |---|---|---|---|
-| CA-01 | Pendiente | — | — |
-| CA-02 | Pendiente | — | — |
-| CA-03 / DoD | Pendiente | — | — |
+| CA-01 | Cumple | `AppointmentLifecycleIntegrationTest`.hu025_ca01_ca02_userListsOwnAppointmentsWithMinimumDataFiltersAndRejectionReason | Sede, profesional, especialidad, fecha/hora, duración y estado. |
+| CA-02 | Cumple | Misma prueba | Filtros `status`, `from`, `to`; rango inválido o estado desconocido → 400; `decisionReason` solo en rechazadas. |
+| CA-03 / DoD | Cumple | `AppointmentLifecycleIntegrationTest`.hu025_ca03_detailOfAnotherUsersAppointmentIsNotDisclosed | Cita ajena → 404; la lista solo trae las propias. `citas-web` `MyAppointments`, `my-appointments.spec.ts`. |
 ## Historial de validación
 - 2026-09-17 — HU creada en estado `Pendiente de aprobación`.
+- 2026-10-01 — RED 2026-10-01: 8 de 11 pruebas fallaron antes de implementar (respuestas sin sede/profesional, reprogramación sin 201 ni estado visible, sin decisión del paciente tras rechazo); GREEN tras mover el ciclo de vida a `scheduling` hexagonal. Estado `Completada`.
 ## Notas y decisiones
 - Las pantallas se incorporan al cliente sin prescribir framework.
